@@ -187,7 +187,7 @@ if (!message.guild.member(user).bannable) return message.reply('No puedo banear 
 
 
 message.guild.member(user).ban(razon);
-message.channel.send(`:heavy_check_mark: **${user.username}**, fue baneado del servidor debido a **'${razon}'**.`);
+message.channel.send(`:white_check_mark: **${user.username}**, fue baneado del servidor debido a **'${razon}'**.`);
 
 }
 
@@ -203,7 +203,7 @@ if (!razon) return message.channel.send('Escriba una razón, `-kick @username [r
 if (!message.guild.member(user).kickable) return message.reply('No puedo patear al usuario mencionado.');
 
 message.guild.member(user).kick(razon);
-message.channel.send(`:heavy_check_mark: **${user.username}**, fue expulsado del servidor debido a **${razon}**.`);
+message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del servidor debido a **${razon}**.`);
 
 }
 
