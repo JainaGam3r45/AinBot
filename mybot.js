@@ -187,8 +187,6 @@ message.channel.send(`¡Se borraron **${cantidad}** mensajes con éxito!`).then(
     message.delete();
   let canal = client.channels.get("514608773306908672")
     canal.send(`:warning: BAN\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: ${message.author.tag}\n**Motivo**: ${razon}`);
-    
-  }
 
 }
 
