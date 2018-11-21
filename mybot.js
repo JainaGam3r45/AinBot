@@ -173,20 +173,22 @@ message.channel.send(`¡Se borraron **${cantidad}** mensajes con éxito!`).then(
 });
 }
 
-if(message.content.startsWith(prefix + 'ban')){
-let user = message.mentions.users.first();
-let razon = args.slice(1).join(' ');
-let permiso = message.member.hasPermission("BAN_MEMBERS");
+ if(message.content.startsWith(prefix + 'ban')){
+    let mencionado = message.mentions.users.first();
+    let razon = args.slice(1).join(' ');
+    let permiso = message.member.hasPermission("BAN_MEMBERS");
+      
+ if(!permiso) return message.channel.send('No tienes permisos suficientes permisos para eso.')
+ if(!mencionado) return message.channel.send('Error!, debes de mencionar a alguien para completar esta acción!')
+ if(!razon) return message.channel.send('Error!, debes de colocar una razón para poder completar esta acción!')
+      
 
-if(!permiso) return message.channel.send('No tienes permisos suficientes para poder banear!');
-
-if (message.mentions.users.size < 1) return message.reply(' menciona al usuario que banearás.').catch(console.error);
-if(!razon) return message.channel.send('Escriba un razón, `-ban @username [razón]`');
-if (!message.guild.member(user).bannable) return message.reply('No puedo banear al usuario mencionado.');
-
-
-message.guild.member(user).ban(razon);
-message.channel.send(`:white_check_mark: **${user.username}**, fue baneado del servidor debido a **'${razon}'**.`);
+    message.channel.send(`${mencionado.username} ha sido baneado con éxito!`)
+    message.delete();
+  let canal = client.channels.get("514608773306908672")
+    canal.send(`:warning: BAN\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: ${message.author.tag}\n**Motivo**: ${razon}`);
+    
+  }
 
 }
 
