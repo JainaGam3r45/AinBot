@@ -78,9 +78,9 @@ if(message.content.startsWith(prefix + 'help')){
   .setColor("#e69032")
   .addField(":scroll: • **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
   .addField(":ledger: • **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
-  .addField(":hammer_pick: • **Comandos de Staff**", "__`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
+  .addField(":hammer_pick: • **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
   .addField(":books: • **Comandos de Soporte**", "__`invite`__ , __`debug`__")
-  .setFooter("Prefix principal - | Total de comandos: 13", client.user.avatarURL)
+  .setFooter("Prefix principal - | Total de comandos: 14", client.user.avatarURL)
   .setTimestamp()
 
   message.author.send({embed});
