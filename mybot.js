@@ -207,5 +207,33 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
 
 }
 
+    if(message.content.startsWith(prefix + 'warn')){
+    let mencionado = message.mentions.users.first();
+    let razon = args.slice(1).join(' ');
+    let permiso = message.member.hasPermission("KICK_MEMBERS");
+      
+ if(!permiso) return message.channel.send('No tienes permisos suficientes para utilizar este comando.')
+ if(!mencionado) return message.channel.send('Error!, debes de mencionar a alguien para completar esta acción!')
+ if(!razon) return message.channel.send('Erro!, debes de colocar una razón para poder completar esta acción!')
+      
+
+    message.channel.send(`${mencionado.username} ha sido advertido!`).then((m) => {
+      m.react("✅")
+      m.delete(5000);
+    message.delete();
+  const embed = new Discord.RichEmbed()
+    .setTitle("Nueva advertencia!")
+    .addField("**Usuario**", `${mencionado.username}`)
+    .addField("Motivos:",`${razon}`)
+    .setFooter("Usuario advertido!")
+    .setTimestamp()
+    .setColor("#e69032");
+  let canal = client.channels.get("510111668853014528")
+    canal.send(embed);
+      
+    });
+    
+  }
+
 });
 client.login(config.token);
