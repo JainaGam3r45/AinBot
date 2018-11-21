@@ -220,7 +220,7 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
     message.channel.send(`${mencionado.username} ha sido advertido con éxito!`)
     message.delete();
   let canal = client.channels.get("513374632129069066")
-    canal.send(`:warning: ADVERTENCIA\n**Usuario**: ${mencionado.username}\n**Staff**: ${message.author.tag}\n**Motivo**: ${razon}`);
+    canal.send(`:warning: ADVERTENCIA\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: ${message.author.tag}\n**Motivo**: ${razon}`);
     
   }
 
