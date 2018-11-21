@@ -228,7 +228,7 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
     .setFooter("Usuario advertido!")
     .setTimestamp()
     .setColor("#e69032");
-  let canal = client.channels.get("510111668853014528")
+  let canal = client.channels.get("513374632129069066")
     canal.send(embed);
       
     });
