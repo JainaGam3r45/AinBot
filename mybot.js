@@ -76,10 +76,10 @@ if(message.content.startsWith(prefix + 'help')){
   .addField(":clipboard: • **Lista de comandos**",
     "¡Hola! me llamo FunBot2 n.n, y esta es mi lista de comandos. Si necesitas ayuda detallada con algún comando, sólo contáctanos mediante nuestro correo eléctronico ``dubecraft.original@gmail.com``.")
   .setColor("#e69032")
-  .addField(":scroll: • **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
-  .addField(":ledger: • **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
-  .addField(":hammer_pick: • **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
-  .addField(":books: • **Comandos de Soporte**", "__`invite`__ , __`debug`__")
+  .addField("• **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
+  .addField("• **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
+  .addField("• **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
+  .addField("• **Comandos de Soporte**", "__`invite`__ , __`debug`__")
   .setFooter("Prefix principal - | Total de comandos: 14", client.user.avatarURL)
   .setTimestamp()
 
