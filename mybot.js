@@ -183,7 +183,7 @@ message.channel.send(`¡Se borraron **${cantidad}** mensajes con éxito!`).then(
  if(!razon) return message.channel.send('Error!, debes de colocar una razón para poder completar esta acción!')
       
 
-    message.channel.send(`${mencionado.username} ha sido baneado con éxito!`)
+    message.channel.send(`:white_check_mark: **${mencionado.username}**, fue banedo del servidor debido a **'${razon}'**`)
     message.delete();
   let canal = client.channels.get("514608773306908672")
     canal.send(`:warning: BAN\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: ${message.author.tag}\n**Motivo**: ${razon}`);
