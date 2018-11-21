@@ -84,8 +84,7 @@ if(message.content.startsWith(prefix + 'help')){
   .setTimestamp()
 
   message.author.send({embed});
-  message.delete();
-
+   
 }
 
 if(message.content.startsWith(prefix + '8ball')){
