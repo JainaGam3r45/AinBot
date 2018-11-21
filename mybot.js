@@ -207,31 +207,20 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
 
 }
 
-    if(message.content.startsWith(prefix + 'warn')){
+ if(message.content.startsWith(prefix + 'warn')){
     let mencionado = message.mentions.users.first();
     let razon = args.slice(1).join(' ');
     let permiso = message.member.hasPermission("KICK_MEMBERS");
       
  if(!permiso) return message.channel.send('No tienes permisos suficientes para utilizar este comando.')
  if(!mencionado) return message.channel.send('Error!, debes de mencionar a alguien para completar esta acción!')
- if(!razon) return message.channel.send('Erro!, debes de colocar una razón para poder completar esta acción!')
+ if(!razon) return message.channel.send('Error!, debes de colocar una razón para poder completar esta acción!')
       
 
-    message.channel.send(`${mencionado.username} ha sido advertido!`).then((m) => {
-      m.react("✅")
-      m.delete(5000);
+    message.channel.send(`${mencionado.username} ha sido advertido con éxito!`)
     message.delete();
-  const embed = new Discord.RichEmbed()
-    .setTitle("Nueva advertencia!")
-    .addField("**Usuario**", `${mencionado.username}`)
-    .addField("Motivos:",`${razon}`)
-    .setFooter("Usuario advertido!")
-    .setTimestamp()
-    .setColor("#e69032");
   let canal = client.channels.get("513374632129069066")
-    canal.send(embed);
-      
-    });
+    canal.send(`**:warning: ADVERTENCIA**\n**Usuario:** ${mencionado.username}\n**Razón:** ${razon}\n**Responsable:** ${message.author.tag}`);
     
   }
 
