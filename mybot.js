@@ -216,7 +216,7 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
  if(!razon) return message.channel.send('Error!, debes de colocar una razón para poder completar esta acción!')
       
 
-    message.channel.send(`:white_check_mark: **${mencionado.username}**, fue expulsado del servidor debido a **'${razon}'**`)
+    message.channel.send(`:white_check_mark: **${mencionado.username}**, fue advertido debido a **'${razon}'**`)
     message.delete();
   let canal = client.channels.get("514608773306908672")
     canal.send(`:warning: ADVERTENCIA\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: <@${message.author.id}>\n**Motivo**: ${razon}`);
