@@ -94,7 +94,7 @@ if(message.content.startsWith(prefix + '8ball')){
   if (!argss) return message.reply(`Escriba una pregunta.`);
   const embed = new Discord.RichEmbed()
   .setTitle('🎱 | Pregunta 8ball')
-  .addField('**Tu pregunta:**', `\`\`\`${argss}\`\`\``)
+  .addField('**Tu pregunta:**', `${argss}`)
   .addField('**Mi respuesta:**', `\`\`\`${rpts[Math.floor(Math.random() * rpts.length)]}\`\`\``)
   .setThumbnail(message.author.avatarURL)
   .setFooter(`${message.author.tag}`)
