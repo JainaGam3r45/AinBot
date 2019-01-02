@@ -218,7 +218,7 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
 
     message.channel.send(`:white_check_mark: **${mencionado.username}**, fue advertido debido a **'${razon}'**`)
     message.delete();
-  let canal = client.channels.get("515174485243199488")
+  let canal = client.channels.get("530018786716155925")
     canal.send(`:warning: ADVERTENCIA\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: <@${message.author.id}>\n**Motivo**: ${razon}`);
     
   }
