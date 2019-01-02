@@ -8,7 +8,7 @@ client.on("ready", () => {
    client.user.setPresence( {
        status: "online",
        game: {
-           name: "-help | Versión 1.1",
+           name: "Actualizando a la 1.2" "-help | Versión 1.1",
            type: "PLAYING"
        }
    } );
