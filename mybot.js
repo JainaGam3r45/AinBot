@@ -75,7 +75,7 @@ if(message.content.startsWith(prefix + 'help')){
     const embed = new Discord.RichEmbed()
   .addField(":clipboard: • **Lista de comandos**",
     "¡Hola! Soy GoldCrafters Bot y soy el bot oficial de GoldCrafters Network, aquí te dejaré mi lista de comandos:")
-  .setColor("#e69032", "#17e725")
+  .setColor("#e69032" "#17e725")
   .addField("• **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
   .addField("• **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
   .addField("• **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
