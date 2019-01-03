@@ -80,7 +80,7 @@ if(message.content.startsWith(prefix + 'help')){
   .addField("• **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
   .addField("• **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
   .addField("• **Comandos de Soporte**", "__`invite`__ , __`debug`__")
-  .setFooter("Prefix principal - | Total de comandos: 14", client.user.avatarURL)
+  .setFooter("GoldCrafters | Total de comandos: 14", client.user.avatarURL)
   .setTimestamp()
 
   message.author.send({embed});
