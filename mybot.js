@@ -74,7 +74,7 @@ if(message.content.startsWith(prefix + 'help')){
     message.channel.send(':mailbox_with_mail: **Mi lista de comandos fue enviada a tus mensajes privados.**');
     const embed = new Discord.RichEmbed()
   .addField(":clipboard: • **Lista de comandos**",
-    "¡Hola! me llamo FunBot2 n.n, y esta es mi lista de comandos. Si necesitas ayuda detallada con algún comando, sólo contáctanos mediante nuestro correo eléctronico ``dubecraft.original@gmail.com``.")
+    "¡Hola! me llamo GAMES n.n, y esta es mi lista de comandos. Si necesitas ayuda detallada con algún comando, sólo contáctanos mediante nuestro correo eléctronico ``dubecraft.original@gmail.com``.")
   .setColor("#e69032")
   .addField("• **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
   .addField("• **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
