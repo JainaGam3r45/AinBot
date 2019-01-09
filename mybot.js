@@ -8,7 +8,7 @@ client.on("ready", () => {
    client.user.setPresence( {
        status: "online",
        game: {
-           name: "Actualizando a la 1.2",
+           name: "as!help | Versión 1.5",
            type: "PLAYING"
        }
    } );
@@ -74,13 +74,13 @@ if(message.content.startsWith(prefix + 'help')){
     message.channel.send(':mailbox_with_mail: **Mi lista de comandos fue enviada a tus mensajes privados.**');
     const embed = new Discord.RichEmbed()
   .addField(":clipboard: • **Lista de comandos**",
-    "¡Hola! Soy GoldCrafters Bot y soy el bot oficial de GoldCrafters Network, aquí te dejaré mi lista de comandos:")
+    "¡Hola! Soy AinSoft Bot y soy el bot oficial de AinSoft Network, aquí te dejaré mi lista de comandos:")
   .setColor("#e69032")
   .addField("• **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
   .addField("• **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
   .addField("• **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
   .addField("• **Comandos de Soporte**", "__`invite`__ , __`debug`__")
-  .setFooter("GoldCrafters | Total de comandos: 14", client.user.avatarURL)
+  .setFooter("AinSoft | Total de comandos: 14", client.user.avatarURL)
   .setTimestamp()
 
   message.author.send({embed});
@@ -218,7 +218,7 @@ message.channel.send(`:white_check_mark: **${user.username}**, fue expulsado del
 
     message.channel.send(`:white_check_mark: **${mencionado.username}**, fue advertido debido a **'${razon}'**`)
     message.delete();
-  let canal = client.channels.get("530018786716155925")
+  let canal = client.channels.get("532399317856550943")
     canal.send(`:warning: ADVERTENCIA\n**Usuario**: ${mencionado.username} | <@${mencionado.id}>\n**Staff**: <@${message.author.id}>\n**Motivo**: ${razon}`);
     
   }
