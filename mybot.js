@@ -64,7 +64,7 @@ const embed = new Discord.RichEmbed()
 .addField('Dueño del Servidor', server.owner.user.username+'#'+server.owner.user.discriminator+' ('+server.owner.user.id +')', true)
 .addField('Miembros', server.memberCount, true)
 .addField('Roles', server.roles.size, true)
-.setColor(0x66b3ff)
+.setColor("RANDOM")
 
 message.channel.send({ embed });
 
@@ -75,7 +75,7 @@ if(message.content.startsWith(prefix + 'help')){
     const embed = new Discord.RichEmbed()
   .addField(":clipboard: • **Lista de comandos**",
     "¡Hola! Soy AinSoft Bot y soy el bot oficial de AinSoft Network, aquí te dejaré mi lista de comandos:")
-  .setColor("#e69032")
+  .setColor("RANDOM")
   .addField("• **Comandos Informativos**", "__`help`__ , __`server`__ , __`donate`__")
   .addField("• **Comandos de reacción**", "__`avatar`__ , __`8ball`__ , __`ping`__")
   .addField("• **Comandos de Staff**", "__`warn`__ , __`kick`__ , __`ban`__ , __`say`__ , __`esay`__ , __`clear`__")
@@ -99,7 +99,7 @@ if(message.content.startsWith(prefix + '8ball')){
   .setThumbnail(message.author.avatarURL)
   .setFooter(`${message.author.tag}`)
   .setTimestamp()
-  .setColor("#e69032");
+  .setColor("RANDOM");
   message.channel.send({embed});
 
 }
@@ -134,7 +134,7 @@ if(message.content.startsWith(prefix + 'donate')){
   const embed = new Discord.RichEmbed()
 .addField(":dollar:  ► **Donaciones**",
   "Actualmente contamos con ``PayPal`` para recibir donaciones. ¡Donando podrás acceder a contenido exclusivo y demás cosas! :heart:")
-.setColor("#e69032")
+.setColor("RANDOM")
 .addField("PayPal:", "[Click acá para donar.](https://www.paypal.com/donate/?token=XAcSgwGRQVSzQzxcs6xjMSvNOVfn3RDlIvt7t5YyCUtjhAh3wHERTh-WywZuajrh4zeR7W&country.x=AL&locale.x=AL)")
 .setTimestamp()
 
