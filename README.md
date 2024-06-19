@@ -4,7 +4,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/JainaGam3r45/AinBot)
 ![GitHub license](https://img.shields.io/github/license/JainaGam3r45/AinBot)
 
-> [!INFO]
+> [!NOTE]
 > AinBot es un bot de Discord desarrollado originalmente en 2018 utilizando la versión 11.4.2 de discord.js. Este proyecto fue creado inicialmente como un bot personalizado para un servidor específico en Discord. En 2024, el proyecto se reanuda con la intención de servir como un ejemplo educativo y un recurso de código de ejemplo actualizado a las mejores prácticas actuales.
 
 ## Motivación
