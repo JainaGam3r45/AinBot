@@ -2,7 +2,7 @@ require('dotenv').config();
 const CustomLogger = require('./Utils/CustomLogger');
 const send = new CustomLogger();
 
-const { Client, GatewayIntentBits, Partials, Events, ActivityType, PresenceUpdateStatus } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Collection, Events, ActivityType, PresenceUpdateStatus } = require('discord.js');
 const client = new Client({
     intents: [Object.keys(GatewayIntentBits)],
     partials: [Object.keys(Partials)],
@@ -11,13 +11,13 @@ const client = new Client({
     }
 });
 
+const { loadEvents } = require('./Utils/eventHandler');
+
 client.setMaxListeners(0);
 
-client.on(Events.ClientReady, async (client) => {
-    send.log(`&a[Event] &eClientReady response: &7${client.user.tag} is ready!`);
+client.events = new Collection();
 
-    client.user.setPresence({ activities: [{ name: 'Ainbot', type: ActivityType.Playing }], status: PresenceUpdateStatus.Idle });
-});
+loadEvents(client);
 
 client.login(process.env.BOT_TOKEN).then(() => {
     send.log(`&b[INFO] &a${client.user.tag}&f (&7${client.user.id}&f) has been successfully authenticated!`)
