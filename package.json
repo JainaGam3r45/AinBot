@@ -1,15 +1,38 @@
 {
-  "name": "bot",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ainbot",
+  "version": "1.0.1",
+  "description": "AinBot es un bot de Discord desarrollado originalmente en 2018 utilizando la versión 11.4.2 de discord.js. Este proyecto fue creado inicialmente como un bot personalizado para un servidor específico en Discord. En 2024, el proyecto se reanuda con la intención de servir como un ejemplo educativo y un recurso de código de ejemplo actualizado a las mejores prácticas actuales.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "discord",
+    "bot",
+    "discord.js",
+    "node.js",
+    "javascript",
+    "programming",
+    "education",
+    "tutorial",
+    "example",
+    "opensource",
+    "community",
+    "hobby",
+    "development",
+    "server",
+    "chatbot",
+    "command",
+    "framework",
+    "npm",
+    "mit-license",
+    "git"
+  ],
+  "author": "JainaGam3r45",
+  "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.4.2"
+    "colorful-logify": "^1.0.0",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5"
   }
 }
