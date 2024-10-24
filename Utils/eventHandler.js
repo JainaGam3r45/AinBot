@@ -24,7 +24,7 @@ async function loadEvents (client) {
 
             send.log(`&b[${event.name}] &a${file} ✅`);
         } catch (error) {
-            send.error(`&c[Error] &7${file}: &4${error.message} ❌`);
+            send.log(`&c[Error] &7${file}: &4${error.message} ❌`);
         }
     }
 

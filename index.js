@@ -2,7 +2,7 @@ require('dotenv').config();
 const CustomLogger = require('./Utils/CustomLogger');
 const send = new CustomLogger();
 
-const { Client, GatewayIntentBits, Partials, Collection, Events, ActivityType, PresenceUpdateStatus } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const client = new Client({
     intents: [Object.keys(GatewayIntentBits)],
     partials: [Object.keys(Partials)],
@@ -13,9 +13,9 @@ const client = new Client({
 
 const { loadEvents } = require('./Utils/eventHandler');
 
-client.setMaxListeners(0);
-
 client.events = new Collection();
+client.commands = new Collection();
+client.buttons = new Collection();
 
 loadEvents(client);
 
