@@ -28,7 +28,7 @@ module.exports = {
             iconURL: interaction.user.displayAvatarURL({ dynamic: true }) 
         });
 
-        await interaction.editReply({ embeds: [pingEmbed] });
+        await interaction.reply({ embeds: [pingEmbed] });
 
     },
 };
