@@ -13,9 +13,11 @@ module.exports = {
      */
     async execute(client) {
 
-        send.log(`&b[INFO] &a${client.user.tag} &f(&7${client.user.id}&f) is online and ready to serve you.`);
+        loadCommands(client); // Cargar comandos...
 
         client.user.setPresence({ activities: [{ name: 'Ainbot', type: ActivityType.Playing }], status: PresenceUpdateStatus.Idle });
+
+        send.log(`&b[INFO] &a${client.user.tag} &f(&7${client.user.id}&f) is online and ready to serve you.`);
 
     },
 };
