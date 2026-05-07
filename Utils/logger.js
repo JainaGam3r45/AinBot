@@ -30,37 +30,73 @@ const levels = {
 };
 
 class Logger {
+    /**
+     * Writes a debug message.
+     * @param {...unknown} values Values to print.
+     */
     debug(...values) {
         this.write("debug", values);
     }
 
+    /**
+     * Writes an info message.
+     * @param {...unknown} values Values to print.
+     */
     info(...values) {
         this.write("info", values);
     }
 
+    /**
+     * Writes a warning message.
+     * @param {...unknown} values Values to print.
+     */
     warn(...values) {
         this.write("warn", values);
     }
 
+    /**
+     * Writes an error message.
+     * @param {...unknown} values Values to print.
+     */
     error(...values) {
         this.write("error", values);
     }
 
+    /**
+     * Logs an operational issue that should be investigated.
+     * @param {string} context Short description of where the issue happened.
+     * @param {unknown} error Error or value to record.
+     */
     issue(context, error) {
         this.error(`${context}:`, error);
         this.writeIncident("ERROR", context, error);
     }
 
+    /**
+     * Logs a recovered error without stopping the bot.
+     * @param {string} context Short description of what recovered.
+     * @param {unknown} error Error or value to record.
+     */
     recovered(context, error) {
         this.warn(`${context}. Recovered without shutting down.`, error);
         this.writeIncident("WARNING", context, error);
     }
 
+    /**
+     * Logs a critical error before shutdown.
+     * @param {string} context Short description of the fatal failure.
+     * @param {unknown} error Error or value to record.
+     */
     critical(context, error) {
         this.error(`${context}. Critical shutdown required.`, error);
         this.writeIncident("CRITICAL", context, error);
     }
 
+    /**
+     * Writes a message with a dynamic log level.
+     * @param {string} level Log level name.
+     * @param {...unknown} values Values to print.
+     */
     log(level, ...values) {
         if (!levels[level]) {
             this.info(level, ...values);
@@ -70,6 +106,11 @@ class Logger {
         this.write(level, values);
     }
 
+    /**
+     * Formats and writes a log entry.
+     * @param {string} level Registered log level.
+     * @param {unknown[]} values Values to print.
+     */
     write(level, values) {
         const entry = levels[level];
         const message = values.length ? values.map(formatValue).join(" ") : "";
@@ -79,6 +120,12 @@ class Logger {
         entry.stream.write(`${timestamp} ${label} ${message}\n`);
     }
 
+    /**
+     * Writes a detailed incident report to the daily anti-crash log.
+     * @param {string} severity Incident severity label.
+     * @param {string} context Short description of the incident.
+     * @param {unknown} value Error or value to record.
+     */
     writeIncident(severity, context, value) {
         const error = normalizeError(value, context);
         const timestamp = new Date();

@@ -1,4 +1,4 @@
-const { ChatInputCommandInteraction, Events, MessageFlags } = require("discord.js");
+const { ChatInputCommandInteraction, Client, Events, MessageFlags } = require("discord.js");
 const logger = require("../../Utils/logger");
 
 module.exports = {
@@ -6,6 +6,7 @@ module.exports = {
     /**
      * Routes command and button interactions to their handlers.
      * @param {ChatInputCommandInteraction} interaction Incoming interaction.
+     * @param {Client} client Discord client with command and button collections.
      */
     async execute(interaction, client) {
         if (interaction.isChatInputCommand()) {

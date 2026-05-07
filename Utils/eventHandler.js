@@ -55,6 +55,8 @@ async function loadEvents (client) {
 /**
  * Registers the listener that runs every handler for one Discord event.
  * @param {Client} client Discord client receiving the listener.
+ * @param {object} group Event group to register.
+ * @param {object} logger Logger used for runtime failures.
  */
 function registerEventGroup(client, group, logger) {
     const target = group.rest ? client.rest : client;
