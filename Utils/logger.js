@@ -1,7 +1,10 @@
+const { appendFileSync, mkdirSync } = require("fs");
+const path = require("path");
 const { inspect } = require("util");
 
 const reset = "\x1b[0m";
 const dim = "\x1b[2m";
+const logsDirectory = path.join(process.cwd(), "logs");
 
 const levels = {
     debug: {
@@ -27,42 +30,37 @@ const levels = {
 };
 
 class Logger {
-    /** Writes a debug message. */
     debug(...values) {
         this.write("debug", values);
     }
 
-    /** Writes an info message. */
     info(...values) {
         this.write("info", values);
     }
 
-    /** Writes a warning message. */
     warn(...values) {
         this.write("warn", values);
     }
 
-    /** Writes an error message. */
     error(...values) {
         this.write("error", values);
     }
 
-    /** Logs an operational issue that should be investigated. */
     issue(context, error) {
         this.error(`${context}:`, error);
+        this.writeIncident("ERROR", context, error);
     }
 
-    /** Logs a recovered error without stopping the bot. */
     recovered(context, error) {
         this.warn(`${context}. Recovered without shutting down.`, error);
+        this.writeIncident("WARNING", context, error);
     }
 
-    /** Logs a critical error before shutdown. */
     critical(context, error) {
         this.error(`${context}. Critical shutdown required.`, error);
+        this.writeIncident("CRITICAL", context, error);
     }
 
-    /** Writes a message with a dynamic log level. */
     log(level, ...values) {
         if (!levels[level]) {
             this.info(level, ...values);
@@ -72,7 +70,6 @@ class Logger {
         this.write(level, values);
     }
 
-    /** Formats and writes a log entry. */
     write(level, values) {
         const entry = levels[level];
         const message = values.length ? values.map(formatValue).join(" ") : "";
@@ -80,6 +77,27 @@ class Logger {
         const label = `${entry.color}[${entry.label}]:${reset}`;
 
         entry.stream.write(`${timestamp} ${label} ${message}\n`);
+    }
+
+    writeIncident(severity, context, value) {
+        const error = normalizeError(value, context);
+        const timestamp = new Date();
+        const logEntry = formatIncident({
+            context,
+            error,
+            severity,
+            timestamp,
+        });
+
+        try {
+            mkdirSync(logsDirectory, {
+                recursive: true,
+            });
+
+            appendFileSync(getLogFilePath(timestamp), `${logEntry}\n`, "utf8");
+        } catch (error) {
+            process.stderr.write(`Could not write anti-crash log: ${formatValue(error)}\n`);
+        }
     }
 }
 
@@ -112,6 +130,61 @@ function formatError(error) {
     }
 
     return details.join("\n");
+}
+
+function formatIncident({ context, error, severity, timestamp }) {
+    const memory = process.memoryUsage();
+
+    return [
+        "=".repeat(80),
+        `🕐 TIMESTAMP: ${timestamp.toLocaleString("en-US")}`,
+        `🚨 SEVERITY: ${severity}`,
+        `📍 CONTEXT: ${context}`,
+        `💬 MESSAGE: ${error.message}`,
+        "",
+        "📋 STACK TRACE:",
+        error.stack || error.message,
+        "",
+        "💾 MEMORY:",
+        `   - Used: ${toMegabytes(memory.heapUsed)}MB`,
+        `   - Total: ${toMegabytes(memory.heapTotal)}MB`,
+        `   - External: ${toMegabytes(memory.external)}MB`,
+        "",
+        "🖥️ SYSTEM:",
+        `   - Platform: ${process.platform} (${process.arch})`,
+        `   - Node.js: ${process.version}`,
+        `   - Uptime: ${Math.floor(process.uptime())}s`,
+        "=".repeat(80),
+    ].join("\n");
+}
+
+function normalizeError(value, fallbackMessage) {
+    if (value instanceof Error) return value;
+
+    if (value === undefined || value === null) {
+        return new Error(fallbackMessage);
+    }
+
+    const message = typeof value === "string"
+        ? value
+        : inspect(value, {
+            colors: false,
+            depth: 4,
+        });
+
+    return new Error(message);
+}
+
+function getLogFilePath(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return path.join(logsDirectory, `anticrash-${year}-${month}-${day}.log`);
+}
+
+function toMegabytes(bytes) {
+    return Math.round(bytes / 1024 / 1024);
 }
 
 function formatTime(date) {
