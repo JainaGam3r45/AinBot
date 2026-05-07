@@ -1,9 +1,14 @@
 const {
     ActionRowBuilder,
     ChannelType,
+    FileUploadBuilder,
+    LabelBuilder,
     MessageFlags,
     ModalBuilder,
     PermissionFlagsBits,
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+    TextDisplayBuilder,
     TextInputBuilder,
     TextInputStyle,
     ThreadAutoArchiveDuration,
@@ -503,7 +508,7 @@ async function showModal(args, context) {
         .setTitle(String(args.title || "Modal"))
         .setCustomId(String(args["custom-id"] || args.customId));
 
-    modal.addComponents(...(args.components || []).map(buildModalRow));
+    addModalComponents(modal, args.components || []);
 
     await context.interaction.showModal(modal);
 }
@@ -684,20 +689,183 @@ async function runNotMetActions(conditions, context) {
     }
 }
 
+function addModalComponents(modal, configs) {
+    if (!Array.isArray(configs) || configs.length === 0) {
+        throw new Error("showModal action needs at least one component.");
+    }
+
+    if (configs.length > 5) {
+        throw new Error("showModal action cannot have more than five top-level components.");
+    }
+
+    for (let index = 0; index < configs.length;) {
+        const type = getModalComponentType(configs[index]);
+
+        if (type === "label") {
+            const labels = [];
+
+            while (configs[index] && getModalComponentType(configs[index]) === "label") {
+                labels.push(buildModalLabel(configs[index]));
+                index += 1;
+            }
+
+            modal.addLabelComponents(...labels);
+            continue;
+        }
+
+        if (type === "text-display") {
+            const textDisplays = [];
+
+            while (configs[index] && getModalComponentType(configs[index]) === "text-display") {
+                textDisplays.push(buildModalTextDisplay(configs[index]));
+                index += 1;
+            }
+
+            modal.addTextDisplayComponents(...textDisplays);
+            continue;
+        }
+
+        modal.addComponents(buildModalRow(configs[index]));
+        index += 1;
+    }
+}
+
+function buildModalLabel(config) {
+    const inputConfig = config.component || config.input;
+
+    if (!inputConfig) {
+        throw new Error("A modal label needs a nested component.");
+    }
+
+    const label = new LabelBuilder()
+        .setLabel(String(config.label || inputConfig.label || getCustomId(inputConfig)));
+
+    if (config.description) label.setDescription(String(config.description));
+
+    switch (getModalComponentType(inputConfig)) {
+        case "text-input":
+            label.setTextInputComponent(buildModalTextInput(inputConfig));
+            break;
+        case "string-select":
+            label.setStringSelectMenuComponent(buildModalStringSelect(inputConfig));
+            break;
+        case "file-upload":
+            label.setFileUploadComponent(buildModalFileUpload(inputConfig));
+            break;
+        default:
+            throw new Error(`Unsupported modal label component type "${inputConfig.type}".`);
+    }
+
+    return label;
+}
+
+function buildModalTextDisplay(config) {
+    return new TextDisplayBuilder().setContent(String(config.content ?? config.value ?? ""));
+}
+
 function buildModalRow(config) {
+    return new ActionRowBuilder().addComponents(buildModalTextInput(config, {
+        legacyLabel: true,
+    }));
+}
+
+function buildModalTextInput(config, options = {}) {
     const inputConfig = config.component || config;
     const input = new TextInputBuilder()
-        .setCustomId(String(inputConfig["custom-id"] || inputConfig.customId))
-        .setLabel(String(config.label || inputConfig.label || inputConfig["custom-id"] || inputConfig.customId))
+        .setCustomId(String(getCustomId(inputConfig)))
         .setStyle(getTextInputStyle(inputConfig.style));
 
+    if (options.legacyLabel) {
+        input.setLabel(String(config.label || inputConfig.label || getCustomId(inputConfig)));
+    }
+
     if (inputConfig.placeholder) input.setPlaceholder(String(inputConfig.placeholder));
-    if (inputConfig.value) input.setValue(String(inputConfig.value));
-    if (inputConfig.required !== undefined) input.setRequired(Boolean(inputConfig.required));
+    if (inputConfig.value !== undefined) input.setValue(String(inputConfig.value));
+    if (inputConfig.required !== undefined) input.setRequired(toBoolean(inputConfig.required));
     if (inputConfig["min-length"] !== undefined) input.setMinLength(Number(inputConfig["min-length"]));
     if (inputConfig["max-length"] !== undefined) input.setMaxLength(Number(inputConfig["max-length"]));
 
-    return new ActionRowBuilder().addComponents(input);
+    return input;
+}
+
+function buildModalStringSelect(config) {
+    const options = config.options || [];
+
+    if (!Array.isArray(options) || options.length === 0 || options.length > 25) {
+        throw new Error("A modal string-select needs 1-25 options.");
+    }
+
+    const select = new StringSelectMenuBuilder()
+        .setCustomId(String(getCustomId(config)));
+
+    if (config.placeholder) select.setPlaceholder(String(config.placeholder));
+    if (config.required !== undefined) select.setRequired(toBoolean(config.required));
+    if (config["min-values"] !== undefined) select.setMinValues(Number(config["min-values"]));
+    if (config.minValues !== undefined) select.setMinValues(Number(config.minValues));
+    if (config["max-values"] !== undefined) select.setMaxValues(Number(config["max-values"]));
+    if (config.maxValues !== undefined) select.setMaxValues(Number(config.maxValues));
+
+    select.addOptions(options.map(buildModalStringSelectOption));
+
+    return select;
+}
+
+function buildModalStringSelectOption(option) {
+    const label = option.label || option.name;
+    const selectOption = new StringSelectMenuOptionBuilder()
+        .setLabel(String(label))
+        .setValue(String(option.value ?? label));
+
+    if (option.description) selectOption.setDescription(String(option.description));
+    if (option.emoji) selectOption.setEmoji(option.emoji);
+    if (option.default) selectOption.setDefault(true);
+
+    return selectOption;
+}
+
+function buildModalFileUpload(config) {
+    const upload = new FileUploadBuilder()
+        .setCustomId(String(getCustomId(config)));
+
+    if (config.required !== undefined) upload.setRequired(toBoolean(config.required));
+    if (config["min-values"] !== undefined) upload.setMinValues(Number(config["min-values"]));
+    if (config.minValues !== undefined) upload.setMinValues(Number(config.minValues));
+    if (config["max-values"] !== undefined) upload.setMaxValues(Number(config["max-values"]));
+    if (config.maxValues !== undefined) upload.setMaxValues(Number(config.maxValues));
+
+    return upload;
+}
+
+function getModalComponentType(config = {}) {
+    if (!config.type) {
+        if (Array.isArray(config.options)) return "string-select";
+
+        return "text-input";
+    }
+
+    const normalized = String(config.type).replaceAll("_", "-").toLowerCase();
+    const aliases = {
+        input: "text-input",
+        select: "string-select",
+        "select-menu": "string-select",
+        "string-select-menu": "string-select",
+        text: "text-display",
+        textdisplay: "text-display",
+        upload: "file-upload",
+        file: "file-upload",
+    };
+
+    return aliases[normalized] || normalized;
+}
+
+function getCustomId(config) {
+    const customId = config["custom-id"] || config.customId;
+
+    if (!customId) {
+        throw new Error(`${config.type || "modal component"} needs custom-id.`);
+    }
+
+    return customId;
 }
 
 function getTextInputStyle(value) {

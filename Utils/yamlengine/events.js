@@ -1,4 +1,4 @@
-const { Events } = require("discord.js");
+const { ComponentType, Events } = require("discord.js");
 const { loadYamlFiles } = require("./files");
 const { createRuntimeContext } = require("./context");
 const { runActions, validateActions } = require("./actions");
@@ -181,14 +181,89 @@ function getInteractionVariables(interaction, type) {
 
 function getModalVariables(interaction) {
     const fields = interaction.fields?.fields;
-    const values = fields
-        ? Object.fromEntries([...fields.values()].map((field) => [`modal_${field.customId}`, field.value]))
-        : {};
+    const values = {};
+
+    if (fields) {
+        for (const field of fields.values()) {
+            Object.assign(values, getModalFieldVariables(field));
+        }
+    }
 
     return {
         ...getCustomIdVariables("modal", interaction.customId),
         ...values,
     };
+}
+
+function getModalFieldVariables(field) {
+    switch (field.type) {
+        case ComponentType.TextInput:
+            return getModalTextInputVariables(field);
+        case ComponentType.StringSelect:
+            return getModalSelectVariables(field.customId, field.values || []);
+        case ComponentType.FileUpload:
+            return getModalFileVariables(field.customId, field.attachments);
+        default:
+            return getModalFallbackVariables(field);
+    }
+}
+
+function getModalTextInputVariables(field) {
+    const key = `modal_${field.customId}`;
+    const value = field.value || "";
+
+    return {
+        [key]: value,
+        [`${key}_length`]: value.length,
+    };
+}
+
+function getModalSelectVariables(customId, values) {
+    const key = `modal_${customId}`;
+    const selectedValues = [...values].map(String);
+
+    return {
+        [key]: selectedValues.join(", "),
+        [`${key}_count`]: selectedValues.length,
+        ...Object.fromEntries(selectedValues.map((value, index) => [`${key}_value_${index}`, value])),
+    };
+}
+
+function getModalFileVariables(customId, attachments) {
+    const key = `modal_${customId}`;
+    const files = attachments?.values ? [...attachments.values()] : [];
+    const urls = files.map((file) => file.url || "");
+    const variables = {
+        [key]: urls.join(", "),
+        [`${key}_count`]: files.length,
+    };
+
+    for (const [index, file] of files.entries()) {
+        variables[`${key}_id_${index}`] = file.id || "";
+        variables[`${key}_url_${index}`] = file.url || "";
+        variables[`${key}_proxy_url_${index}`] = file.proxyURL || "";
+        variables[`${key}_name_${index}`] = file.name || "";
+        variables[`${key}_size_${index}`] = file.size || "";
+        variables[`${key}_content_type_${index}`] = file.contentType || "";
+    }
+
+    return variables;
+}
+
+function getModalFallbackVariables(field) {
+    if (Array.isArray(field.values)) {
+        return getModalSelectVariables(field.customId, field.values);
+    }
+
+    if (field.attachments) {
+        return getModalFileVariables(field.customId, field.attachments);
+    }
+
+    if (field.value !== undefined) {
+        return getModalTextInputVariables(field);
+    }
+
+    return {};
 }
 
 function getCustomIdVariables(prefix, customId) {
