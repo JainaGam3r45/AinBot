@@ -5,6 +5,7 @@ const { inspect } = require("util");
 const reset = "\x1b[0m";
 const dim = "\x1b[2m";
 const logsDirectory = path.join(process.cwd(), "logs");
+const activeMode = normalizeMode(process.env.AINBOT_MODE || process.env.NODE_ENV);
 
 const levels = {
     debug: {
@@ -30,11 +31,18 @@ const levels = {
 };
 
 class Logger {
+    constructor() {
+        this.mode = activeMode;
+        this.debugEnabled = activeMode === "development";
+    }
+
     /**
      * Writes a debug message.
      * @param {...unknown} values Values to print.
      */
     debug(...values) {
+        if (!this.debugEnabled) return;
+
         this.write("debug", values);
     }
 
@@ -165,6 +173,20 @@ function formatValue(value) {
         colors: true,
         depth: 4,
     });
+}
+
+/**
+ * Normalizes the runtime mode used by the logger.
+ * @param {string | undefined} value Raw mode value.
+ */
+function normalizeMode(value) {
+    const mode = String(value || "production").toLowerCase();
+
+    if (mode === "development" || mode === "dev" || mode === "debug") {
+        return "development";
+    }
+
+    return "production";
 }
 
 /**
