@@ -11,7 +11,7 @@
 El objetivo principal de revivir este proyecto es proporcionar un recurso educativo para la comunidad de desarrollo de Discord, mostrando cómo se estructuraba un bot en versiones antiguas de discord.js y cómo se puede actualizar a la versión más reciente (discord.js v14) utilizando las mejores prácticas modernas de JavaScript y Discord bot development.
 
 ## Instalación
-Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Node.js](https://nodejs.org/en)** instalado.
+Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/)** instalado.
 
 1. Clona el repositorio:
 ```bash
@@ -21,7 +21,7 @@ cd AinBot
 
 2. Instala las dependencias:
 ```bash
-npm install
+bun install
 ```
 
 3. Crea un archivo `.env` en el directorio raíz del proyecto y configura tus variables de entorno:
@@ -36,13 +36,13 @@ DEVELOPER_IDS= [
 
 4. Ejecuta el bot en modo normal/producción:
 ```bash
-npm start
+bun start
 ```
 
 Para iniciar el bot en modo desarrollo y mostrar mensajes de debug:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ## Base de datos
@@ -72,11 +72,11 @@ El proveedor se elige con `DATABASE_PROVIDER`:
 Los drivers son opcionales para no instalar dependencias que quizá no uses. Instala solo el que necesites:
 
 ```bash
-npm install better-sqlite3
-npm install pg
-npm install mysql2
-npm install mariadb
-npm install mongodb
+bun add better-sqlite3
+bun add pg
+bun add mysql2
+bun add mariadb
+bun add mongodb
 ```
 
 Ejemplo con SQLite:
