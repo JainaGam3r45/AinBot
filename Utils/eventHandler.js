@@ -11,6 +11,13 @@ async function loadEvents (client) {
     const logger = require("./logger");
 
     client.eventDispatchers ??= new Map();
+    client.yamlEventTimers ??= new Set();
+
+    for (const timer of client.yamlEventTimers) {
+        clearInterval(timer);
+    }
+
+    client.yamlEventTimers.clear();
 
     for (const dispatcher of client.eventDispatchers.values()) {
         dispatcher.target.removeListener(dispatcher.name, dispatcher.execute);

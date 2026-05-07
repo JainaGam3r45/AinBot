@@ -58,9 +58,56 @@ actions:
           content: "Bienvenido %user_mention% a %guild_name%."
 ```
 
-Los triggers soportados son `messageCreate`, `guildMemberAdd`, `guildMemberRemove`, `buttonClick` y `selectMenuSubmit`.
+Triggers soportados:
 
-En botones y selects, el custom id se separa por `_`. Un botón con `script_ticket_open` genera `%button_custom_id%`, `%button_args_count%`, `%button_args%`, `%button_arg_0%` y `%button_arg_1%`.
+- `buttonClick`: cuando se presiona un botón con custom id iniciado en `script_`.
+- `channelCreate`: cuando se crea un canal.
+- `channelDelete`: cuando se elimina un canal.
+- `displayNameUpdate`: cuando cambia el nombre visible de un miembro.
+- `everyMinute`: ejecuta el script una vez por minuto para cada servidor cargado.
+- `everyHour`: ejecuta el script una vez por hora para cada servidor cargado.
+- `everyDay`: ejecuta el script una vez por día para cada servidor cargado.
+- `guildBoostAdd`: cuando un miembro empieza a boostear el servidor.
+- `guildBoostRemove`: cuando un miembro deja de boostear el servidor.
+- `guildMemberAdd`: cuando un miembro entra al servidor.
+- `guildMemberRemove`: cuando un miembro sale del servidor.
+- `messageCreate`: cuando se crea un mensaje.
+- `messageDelete`: cuando se elimina un mensaje.
+- `messageReactionAdd`: cuando se agrega una reacción a un mensaje.
+- `messageReactionRemove`: cuando se quita una reacción de un mensaje.
+- `messageUpdate`: cuando se edita un mensaje.
+- `modalSubmit`: cuando se envía un modal con custom id iniciado en `script_`.
+- `presenceUpdate`: cuando cambia la presencia de un usuario.
+- `selectMenuSubmit`: cuando se envía un select menu con custom id iniciado en `script_`.
+
+`inviteCountUpdate` y los triggers de tickets no están incluidos todavía porque necesitan sistemas propios encima de los eventos base de Discord.
+
+En botones, selects y modales, usa custom ids con este formato:
+
+```text
+script_<identificador>:<arg0>:<arg1>
+```
+
+Ejemplo:
+
+```text
+script_profileOpen:%user_id%:summary
+```
+
+Si un argumento contiene `:`, envuélvelo en comillas simples o dobles.
+
+Variables de interacción disponibles:
+
+- Botones: `%button_custom_id%`, `%button_args_count%`, `%button_args%`, `%button_arg_0%`.
+- Select menus: `%select_menu_custom_id%`, `%select_menu_values_count%`, `%select_menu_values%`, `%select_menu_value_0%`, `%select_menu_args_count%`, `%select_menu_args%`, `%select_menu_arg_0%`.
+- Modales: `%modal_custom_id%`, `%modal_args_count%`, `%modal_args%`, `%modal_arg_0%` y `%modal_<custom-id>%` para cada campo de texto.
+
+Variables extra por trigger:
+
+- `displayNameUpdate`: `%old_display_name%`, `%new_display_name%`.
+- `messageReactionAdd` / `messageReactionRemove`: `%reaction_emoji%`.
+- `messageUpdate`: `%message_old_content%`.
+- `presenceUpdate`: `%old_status%`, `%new_status%`.
 
 ## Mensajes
 
