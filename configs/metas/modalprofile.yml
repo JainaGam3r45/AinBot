@@ -1,0 +1,21 @@
+metas:
+  - key: profile_hobbies
+    type: string
+    mode: user
+    default: ""
+  - key: profile_starter
+    type: string
+    mode: user
+    default: ""
+  - key: profile_picture_url
+    type: string
+    mode: user
+    default: ""
+  - key: profile_picture_name
+    type: string
+    mode: user
+    default: ""
+  - key: profile_picture_size
+    type: string
+    mode: user
+    default: ""

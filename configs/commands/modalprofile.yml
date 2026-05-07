@@ -1,0 +1,52 @@
+name: modalprofile
+description: "Open a reference modal that stores profile data."
+contexts:
+  - guild
+actions:
+  - id: showModal
+    args:
+      custom-id: "script_modal_profile:%user_id%"
+      title: "Profile reference"
+      components:
+        - type: label
+          label: "Favorite hobbies"
+          description: "Activities, topics, or projects you enjoy"
+          component:
+            type: text-input
+            custom-id: hobbies
+            style: paragraph
+            placeholder: "music, drawing, game nights..."
+            min-length: 3
+            max-length: 400
+            required: true
+        - type: label
+          label: "Favorite starter"
+          description: "Pick one option from the select menu"
+          component:
+            type: string-select
+            custom-id: starter
+            placeholder: "Choose a starter"
+            required: true
+            min-values: 1
+            max-values: 1
+            options:
+              - label: Bulbasaur
+                description: "Grass and Poison starter."
+                value: bulbasaur
+              - label: Charmander
+                description: "Fire starter."
+                value: charmander
+              - label: Squirtle
+                description: "Water starter."
+                value: squirtle
+        - type: text-display
+          content: "A picture is optional. If you add one, only its Discord CDN URL and file metadata are stored."
+        - type: label
+          label: "Picture of the week"
+          description: "Optional image or file to reference later"
+          component:
+            type: file-upload
+            custom-id: picture
+            required: false
+            min-values: 0
+            max-values: 1

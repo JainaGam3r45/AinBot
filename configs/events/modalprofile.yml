@@ -1,0 +1,46 @@
+name: modalprofile-submit
+trigger: modalSubmit
+conditions:
+  - id: textEquals
+    args:
+      input: "%modal_custom_id%"
+      value: "script_modal_profile"
+  - id: isUser
+    args:
+      value: "%modal_arg_0%"
+actions:
+  - id: metaSet
+    args:
+      key: profile_hobbies
+      value: "%modal_hobbies%"
+  - id: metaSet
+    args:
+      key: profile_starter
+      value: "%modal_starter%"
+  - id: metaSet
+    args:
+      key: profile_picture_url
+      value: "%modal_picture_url_0%"
+  - id: metaSet
+    args:
+      key: profile_picture_name
+      value: "%modal_picture_name_0%"
+  - id: metaSet
+    args:
+      key: profile_picture_size
+      value: "%modal_picture_size_0%"
+  - id: reply
+    args:
+      ephemeral: true
+      components:
+        - type: container
+          color: "#5865f2"
+          components:
+            - type: text-display
+              content: "## Profile saved"
+            - type: text-display
+              content: "**Hobbies:** %modal_hobbies%\n**Starter:** %modal_starter%\n**Picture:** %modal_picture_name_0%"
+            - type: separator
+              spacing: 1
+            - type: text-display
+              content: "Stored keys: `profile_hobbies`, `profile_starter`, `profile_picture_url`, `profile_picture_name`, `profile_picture_size`."

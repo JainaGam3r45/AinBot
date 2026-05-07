@@ -100,7 +100,7 @@ Variables de interacción disponibles:
 
 - Botones: `%button_custom_id%`, `%button_args_count%`, `%button_args%`, `%button_arg_0%`.
 - Select menus: `%select_menu_custom_id%`, `%select_menu_values_count%`, `%select_menu_values%`, `%select_menu_value_0%`, `%select_menu_args_count%`, `%select_menu_args%`, `%select_menu_arg_0%`.
-- Modales: `%modal_custom_id%`, `%modal_args_count%`, `%modal_args%`, `%modal_arg_0%` y `%modal_<custom-id>%` para cada campo de texto.
+- Modales: `%modal_custom_id%`, `%modal_args_count%`, `%modal_args%`, `%modal_arg_0%` y `%modal_<custom-id>%` para cada campo enviado. En inputs de texto guarda el texto; en selects guarda los valores separados por coma y agrega `%modal_<custom-id>_count%` y `%modal_<custom-id>_value_0%`; en file uploads guarda URLs y agrega `%modal_<custom-id>_url_0%`, `%modal_<custom-id>_name_0%`, `%modal_<custom-id>_size_0%` y `%modal_<custom-id>_content_type_0%`.
 
 Variables extra por trigger:
 
@@ -238,6 +238,8 @@ Acciones soportadas:
 Las acciones `addInviteBonus`, `removeInviteBonus`, `setInviteBonus` y `sendPreset` no están incluidas porque dependen de addons externos que este proyecto no tiene.
 
 Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`, se guardan en memoria y se pierden al reiniciar el proceso.
+
+`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/commands/modalprofile.yml`, con guardado de datos en `configs/events/modalprofile.yml` y metas declaradas en `configs/metas/modalprofile.yml`.
 
 ## Condiciones
 
