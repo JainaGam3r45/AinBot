@@ -57,7 +57,7 @@ function registerEventGroup(client, group, logger) {
                 handler.ran = true;
                 await handler.execute(...args, client);
             } catch (error) {
-                logger.error(`Event ${group.name} failed in ${handler.file}.`, error);
+                logger.recovered(`Event ${group.name} failed in ${handler.file}`, error);
             }
         }
     };
