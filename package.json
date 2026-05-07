@@ -31,9 +31,7 @@
   "author": "JainaGam3r45",
   "license": "MIT",
   "dependencies": {
-    "colorful-logify": "^1.0.0",
-    "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5",
-    "glob": "^8.1.0"
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.4.2"
   }
 }
