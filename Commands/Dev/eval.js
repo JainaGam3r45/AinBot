@@ -1,4 +1,5 @@
 const { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, InteractionContextType, MessageFlags, PermissionFlagsBits } = require("discord.js");
+const { safeDeferReply, safeEditReply } = require("../../Utils/safereply");
 
 module.exports = {
     developer: true,
@@ -23,12 +24,13 @@ module.exports = {
         const { options, user } = interaction;
         const code = options.getString("code");
 
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+        const deferred = await safeDeferReply(interaction, { flags: MessageFlags.Ephemeral });
+        if (!deferred) return;
 
         // Prevenir acceso a comandos peligrosos
         const dangerousGlobals = ['global', 'process', 'require', 'child_process', 'fs', 'eval'];
         if (new RegExp(dangerousGlobals.join('|')).test(code)) {
-            return interaction.editReply({ content: "⚠️ El código incluye funciones o propiedades restringidas." });
+            return safeEditReply(interaction, { content: "⚠️ El código incluye funciones o propiedades restringidas." });
         }
 
         /**
@@ -71,7 +73,7 @@ module.exports = {
             const resultSizeKb = (resultSize / 1024).toFixed(2);
             const sizeDisplay = resultSize > 1024 ? `${resultSizeKb} KB` : `${resultSize} bytes`;
 
-            return await interaction.editReply({
+            return await safeEditReply(interaction, {
                 embeds: [
                     new EmbedBuilder()
                         .setColor('Blurple')
@@ -90,7 +92,7 @@ module.exports = {
             const isSyntaxError = err instanceof SyntaxError;
             const errorType = isSyntaxError ? "Error de Sintaxis" : err.constructor.name;
 
-            return await interaction.editReply({
+            return await safeEditReply(interaction, {
                 embeds: [
                     new EmbedBuilder()
                         .setColor("Red")

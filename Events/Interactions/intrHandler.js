@@ -1,5 +1,6 @@
 const { ChatInputCommandInteraction, Client, Events, MessageFlags } = require("discord.js");
 const logger = require("../../Utils/logger");
+const { isHandledInteractionResponseError, safeReply } = require("../../Utils/safereply");
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -12,13 +13,13 @@ module.exports = {
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
             if (!command)
-                return interaction.reply({
+                return safeReply(interaction, {
                     content: `Command outdated or no longer available.`,
                     flags: MessageFlags.Ephemeral,
                 });
 
             if (command.developer && !process.env.DEVELOPERS_IDS.includes(interaction.user.id))
-                return interaction.reply({
+                return safeReply(interaction, {
                     content: `Oops! You discovered a developer command.`,
                     flags: MessageFlags.Ephemeral,
                 });
@@ -26,6 +27,8 @@ module.exports = {
             try {
                 await command.execute(interaction, client);
             } catch (error) {
+                if (isHandledInteractionResponseError(error)) return;
+
                 logger.recovered(`Command ${interaction.commandName} failed`, error);
 
                 const message = {
@@ -33,11 +36,9 @@ module.exports = {
                     flags: MessageFlags.Ephemeral,
                 };
 
-                if (interaction.deferred || interaction.replied) {
-                    await interaction.followUp(message);
-                } else {
-                    await interaction.reply(message);
-                }
+                await safeReply(interaction, message, {
+                    mode: "preferedit",
+                });
             }
         } else if (interaction.isButton()) {
             const buttonId = interaction.customId.split("_");
@@ -47,6 +48,8 @@ module.exports = {
             try {
                 await button.execute(interaction, client, buttonId.slice(1));
             } catch (error) {
+                if (isHandledInteractionResponseError(error)) return;
+
                 logger.recovered(`Button ${buttonId[0]} failed`, error);
             }
         } else {

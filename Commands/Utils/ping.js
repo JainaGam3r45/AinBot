@@ -1,4 +1,5 @@
 const { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, InteractionContextType } = require("discord.js");
+const { safeReply } = require("../../Utils/safereply");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -28,7 +29,7 @@ module.exports = {
             iconURL: interaction.user.displayAvatarURL()
         });
 
-        await interaction.reply({ embeds: [pingEmbed] });
+        await safeReply(interaction, { embeds: [pingEmbed] });
 
     },
 };
