@@ -20,9 +20,9 @@ function installCrashGuard(client) {
     }
 
     const clientHandlers = [
-        [Events.Error, (error) => logger.recovered("Error del cliente de Discord", error)],
-        [Events.Warn, (message) => logger.warn("Advertencia de Discord:", message)],
-        [Events.ShardError, (error, shardId) => logger.recovered(`Error del shard ${shardId} de Discord`, error)],
+        [Events.Error, (error) => logger.recovered("Discord client error", error)],
+        [Events.Warn, (message) => logger.warn("Discord warning:", message)],
+        [Events.ShardError, (error, shardId) => logger.recovered(`Discord shard ${shardId} error`, error)],
         [Events.Debug, (message) => logger.debug("Discord debug:", message)],
         [Events.Invalidated, () => handleInvalidatedSession(client)],
     ];
@@ -56,7 +56,7 @@ function installCrashGuard(client) {
  * @param {unknown} reason Rejection reason.
  */
 function handleUnhandledRejection(reason) {
-    logger.recovered("Promesa rechazada sin manejar", normalizeError(reason));
+    logger.recovered("Unhandled promise rejection", normalizeError(reason));
 }
 
 /**
@@ -64,7 +64,7 @@ function handleUnhandledRejection(reason) {
  * @param {Error} warning Warning emitted by Node.js.
  */
 function handleWarning(warning) {
-    logger.warn("Advertencia del proceso:", warning);
+    logger.warn("Process warning:", warning);
 }
 
 /**
@@ -73,7 +73,7 @@ function handleWarning(warning) {
  * @param {Error} error Uncaught exception.
  */
 function handleCriticalException(client, error) {
-    logger.critical("Excepción no capturada", error);
+    logger.critical("Uncaught exception", error);
     shutdown(client, 1);
 }
 
@@ -82,7 +82,7 @@ function handleCriticalException(client, error) {
  * @param {Client} client Discord client to shut down.
  */
 function handleInvalidatedSession(client) {
-    logger.critical("La sesión de Discord fue invalidada");
+    logger.critical("Discord session invalidated, shutting down");
     shutdown(client, 1);
 }
 
@@ -97,7 +97,7 @@ function shutdown(client, exitCode) {
     try {
         client.destroy();
     } catch (error) {
-        logger.issue("No se pudo destruir el cliente de Discord durante el apagado", error);
+        logger.issue("Failed to destroy Discord client during shutdown", error);
     } finally {
         setImmediate(() => process.exit(exitCode));
     }
