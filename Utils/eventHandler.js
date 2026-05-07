@@ -1,4 +1,6 @@
 const { Client } = require("discord.js");
+const { loadMessageTemplates } = require("../yamlengine/messages");
+const { loadYamlEvents } = require("../yamlengine/events");
 
 /**
  * Loads event files and registers their listeners on the Discord client.
@@ -16,6 +18,8 @@ async function loadEvents (client) {
 
     client.eventDispatchers.clear();
     await client.events.clear();
+
+    client.yamlMessages ??= await loadMessageTemplates(logger);
 
     const files = await loadFiles("Events");
     const eventGroups = new Map();
@@ -43,6 +47,26 @@ async function loadEvents (client) {
         } catch (error) {
             logger.issue(`Failed to load event from ${file}`, error);
         }
+    }
+
+    const yamlEvents = await loadYamlEvents(client, client.yamlMessages, logger);
+
+    for (const event of yamlEvents) {
+        const groupKey = `${event.rest ? "rest" : "client"}:${event.name}`;
+        const group = eventGroups.get(groupKey) ?? {
+            name: event.name,
+            rest: Boolean(event.rest),
+            handlers: [],
+        };
+
+        group.handlers.push({
+            file: event.yamlName,
+            once: Boolean(event.once),
+            execute: event.execute,
+            ran: false,
+        });
+
+        eventGroups.set(groupKey, group);
     }
 
     for (const group of eventGroups.values()) {

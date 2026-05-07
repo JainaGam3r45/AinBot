@@ -39,6 +39,7 @@
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.26.4",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "yaml": "^2.8.4"
   }
 }
