@@ -39,6 +39,55 @@ DEVELOPER_IDS= [
 npm start
 ```
 
+## Base de datos
+
+AinBot incluye una capa de base de datos configurable desde variables de entorno. El bot expone la conexión como `client.database`, con namespaces para separar datos por dominio:
+
+```js
+const guilds = client.database.namespace("guilds");
+
+await guilds.set(interaction.guildId, {
+    language: "es",
+    premium: false,
+});
+
+const settings = await guilds.get(interaction.guildId);
+```
+
+El proveedor se elige con `DATABASE_PROVIDER`:
+
+- `none`: desactiva persistencia sin romper el arranque del bot.
+- `memory`: útil para pruebas locales rápidas; los datos se pierden al reiniciar.
+- `sqlite`: recomendado para bots pequeños o medianos con una sola instancia.
+- `postgresql`: recomendado para bots que van a escalar, usar shards o correr varias instancias.
+- `mysql` / `mariadb`: buenas opciones si ya tienes esa infraestructura.
+- `mongodb`: útil cuando tus datos son documentos flexibles y cambian mucho de forma.
+
+Los drivers son opcionales para no instalar dependencias que quizá no uses. Instala solo el que necesites:
+
+```bash
+npm install better-sqlite3
+npm install pg
+npm install mysql2
+npm install mariadb
+npm install mongodb
+```
+
+Ejemplo con SQLite:
+
+```makefile
+DATABASE_PROVIDER="sqlite"
+DATABASE_PATH="data/ainbot.sqlite"
+```
+
+Ejemplo con PostgreSQL:
+
+```makefile
+DATABASE_PROVIDER="postgresql"
+DATABASE_URL="postgres://user:password@localhost:5432/ainbot"
+DATABASE_SSL="false"
+```
+
 ## Contribución
 
 Este proyecto está abierto a contribuciones y sugerencias. Si deseas contribuir, por favor sigue estos pasos:
