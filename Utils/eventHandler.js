@@ -41,7 +41,7 @@ async function loadEvents (client) {
 
             logger.debug(`Loaded event ${event.name} from ${file}`);
         } catch (error) {
-            logger.error(`Could not load event from ${file}.`, error);
+            logger.issue(`No se pudo cargar el evento desde ${file}`, error);
         }
     }
 
@@ -67,7 +67,7 @@ function registerEventGroup(client, group, logger) {
                 handler.ran = true;
                 await handler.execute(...args, client);
             } catch (error) {
-                logger.recovered(`Event ${group.name} failed in ${handler.file}`, error);
+                logger.recovered(`El evento ${group.name} falló en ${handler.file}`, error);
             }
         }
     };

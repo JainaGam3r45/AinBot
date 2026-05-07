@@ -26,7 +26,7 @@ async function loadCommands(client) {
 
             logger.debug(`Loaded command ${command.data.name} from ${fileName}`);
         } catch (error) {
-            logger.error(`Could not load command from ${file}.`, error);
+            logger.issue(`No se pudo cargar el comando desde ${file}`, error);
         }
     }
 

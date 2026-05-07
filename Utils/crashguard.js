@@ -20,9 +20,9 @@ function installCrashGuard(client) {
     }
 
     const clientHandlers = [
-        [Events.Error, (error) => logger.recovered("Discord client error", error)],
-        [Events.Warn, (message) => logger.warn("Discord warning:", message)],
-        [Events.ShardError, (error, shardId) => logger.recovered(`Discord shard ${shardId} error`, error)],
+        [Events.Error, (error) => logger.recovered("Error del cliente de Discord", error)],
+        [Events.Warn, (message) => logger.warn("Advertencia de Discord:", message)],
+        [Events.ShardError, (error, shardId) => logger.recovered(`Error del shard ${shardId} de Discord`, error)],
         [Events.Debug, (message) => logger.debug("Discord debug:", message)],
         [Events.Invalidated, () => handleInvalidatedSession(client)],
     ];
@@ -49,20 +49,20 @@ function installCrashGuard(client) {
 }
 
 function handleUnhandledRejection(reason) {
-    logger.recovered("Unhandled promise rejection", normalizeError(reason));
+    logger.recovered("Promesa rechazada sin manejar", normalizeError(reason));
 }
 
 function handleWarning(warning) {
-    logger.warn("Process warning:", warning);
+    logger.warn("Advertencia del proceso:", warning);
 }
 
 function handleCriticalException(client, error) {
-    logger.critical("Uncaught exception", error);
+    logger.critical("Excepción no capturada", error);
     shutdown(client, 1);
 }
 
 function handleInvalidatedSession(client) {
-    logger.critical("Discord session was invalidated");
+    logger.critical("La sesión de Discord fue invalidada");
     shutdown(client, 1);
 }
 
@@ -77,7 +77,7 @@ function shutdown(client, exitCode) {
     try {
         client.destroy();
     } catch (error) {
-        logger.issue("Could not destroy Discord client during shutdown", error);
+        logger.issue("No se pudo destruir el cliente de Discord durante el apagado", error);
     } finally {
         setImmediate(() => process.exit(exitCode));
     }

@@ -59,7 +59,7 @@ async function main() {
         await client.login(process.env.BOT_TOKEN);
         logger.info("Discord login request completed.");
     } catch (error) {
-        logger.critical("The bot could not start", error);
+        logger.critical("El bot no pudo iniciar", error);
         shutdown(client, 1);
     }
 }

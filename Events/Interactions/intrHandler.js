@@ -25,7 +25,7 @@ module.exports = {
             try {
                 await command.execute(interaction, client);
             } catch (error) {
-                logger.recovered(`Command ${interaction.commandName} failed`, error);
+                logger.recovered(`El comando ${interaction.commandName} falló`, error);
 
                 const message = {
                     content: "There was an error while running this command.",
@@ -46,7 +46,7 @@ module.exports = {
             try {
                 await button.execute(interaction, client, buttonId.slice(1));
             } catch (error) {
-                logger.recovered(`Button ${buttonId[0]} failed`, error);
+                logger.recovered(`El botón ${buttonId[0]} falló`, error);
             }
         } else {
             return;
