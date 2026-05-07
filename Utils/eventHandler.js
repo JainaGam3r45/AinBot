@@ -7,7 +7,7 @@ const { loadYamlEvents } = require("./yamlengine/events");
  * @param {Client} client Discord client with events and eventDispatchers collections.
  */
 async function loadEvents (client) {
-    const { loadFiles } = require('../Functions/fileLoader');
+    const { loadFiles } = require("./fileLoader");
     const logger = require("./logger");
 
     client.eventDispatchers ??= new Map();
