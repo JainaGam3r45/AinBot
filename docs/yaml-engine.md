@@ -134,17 +134,32 @@ Los componentes soportados son `text-display`, `container`, `section`, `separato
 
 Acciones soportadas:
 
+- `addCoins`, `removeCoins` y `setCoins`: actualizan el valor meta `coins` del usuario actual.
 - `reply`: responde a la interacción o mensaje actual.
 - `sendMessage`: envía un mensaje a `args.channel` o al canal actual.
+- `sendPrivateMessage`: envía un mensaje privado al usuario actual cuando Discord lo permite.
 - `editReply`: edita la respuesta actual de la interacción.
+- `editMessage`: edita el mensaje actual cuando el bot puede editarlo.
 - `sendTyping`: envía el indicador de escritura en el canal actual.
 - `addReaction`: reacciona al mensaje actual.
+- `removeReaction`: quita una reacción del bot o todas las reacciones si no pasas `value`.
 - `deleteMessage`: elimina el mensaje actual cuando sea posible.
+- `pinMessage` y `unpinMessage`: fijan o desfijan el mensaje actual.
+- `crosspostMessage`: publica un mensaje de canal de anuncios.
 - `addRole` y `removeRole`: actualizan el miembro actual o configurado.
-- `timeout`: aplica timeout al miembro actual o configurado. `duration` se expresa en segundos.
+- `timeout` y `timeoutMember`: aplican timeout al miembro actual o configurado. `duration` se expresa en segundos.
+- `createChannel`, `editChannel` y `deleteChannel`: administran canales del servidor actual.
+- `createThread`, `startThread`, `editThread`, `deleteThread`, `openThread`, `closeThread`, `lockThread` y `unlockThread`: administran hilos.
+- `addTag`, `removeTag` y `setTag`: administran tags aplicados en posts/hilos de foro.
+- `showModal`: muestra un modal desde una interacción.
+- `sendRequest`: hace una petición HTTP y guarda la respuesta en placeholders `%data_*%` para `follow-up-actions`.
+- `randomAction`: ejecuta una acción aleatoria desde `args.actions`.
+- `setCooldown` y `resetCooldown`: guardan o limpian cooldowns por usuario.
 - `evalJavaScript`: evalúa una expresión JavaScript para comandos de desarrollador confiables y renderiza el resultado con Display Components.
-- `setMeta`, `addMeta` y `deleteMeta`: guardan metadatos con alcance por guild y usuario.
+- `setMeta`, `addMeta`, `deleteMeta`, `metaSet`, `metaAdd`, `metaSubtract`, `metaToggle`, `metaRemove`, `metaListAdd` y `metaListRemove`: guardan metadatos con alcance por guild y usuario.
 - `log`: escribe un mensaje mediante el logger central.
+
+Las acciones `addInviteBonus`, `removeInviteBonus`, `setInviteBonus` y `sendPreset` no están incluidas porque dependen de addons externos que este proyecto no tiene.
 
 Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`, se guardan en memoria y se pierden al reiniciar el proceso.
 
@@ -152,15 +167,35 @@ Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`,
 
 Condiciones soportadas:
 
-- `isBot`
-- `isUser`
-- `hasPermission`
-- `hasRole`
-- `inChannel`
-- `matchesRegex`
 - `anyOf`
 - `allOf`
+- `atLeastOf`
+- `coinsAbove`
+- `coinsBelow`
+- `isBot`
+- `isUser`
+- `isBooster`
+- `isExpressionTrue`
+- `isOnCooldown`
+- `isReply`
+- `hasPermission`
+- `hasRole`
+- `hasTag`
+- `inChannel`
+- `matchesRegex`
+- `memberCountAbove`
+- `memberCountBelow`
+- `metaAbove`
+- `metaBelow`
+- `metaEquals`
+- `metaIncludes`
 - `noneOf`
+- `textContains`
+- `textEndsWith`
+- `textEquals`
+- `textLengthAbove`
+- `textLengthBelow`
+- `textStartsWith`
 
 Para invertir una condición, antepone `!` al id o define `inverse: true`.
 
@@ -171,6 +206,10 @@ conditions:
     args:
       value: ManageMessages
 ```
+
+Las condiciones `inTicket` y las condiciones de sistemas externos no están incluidas hasta que exista ese sistema en AinBot. Las condiciones de monedas usan el valor meta `coins`.
+
+Las condiciones en acciones pueden incluir `not-met-actions` para ejecutar una alternativa cuando esa condición falla.
 
 ## Placeholders
 

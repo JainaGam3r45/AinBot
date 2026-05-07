@@ -1,24 +1,69 @@
-const { MessageFlags } = require("discord.js");
+const {
+    ActionRowBuilder,
+    ChannelType,
+    MessageFlags,
+    ModalBuilder,
+    PermissionFlagsBits,
+    TextInputBuilder,
+    TextInputStyle,
+    ThreadAutoArchiveDuration,
+} = require("discord.js");
 const { inspect } = require("util");
 const { buildMessagePayload, validateMessageConfig } = require("./messages");
 const { validateConditions } = require("./conditions");
-const { addMetaValue, deleteMetaValue, setMetaValue } = require("./meta");
+const { addMetaValue, deleteMetaValue, getMetaValue, setMetaValue } = require("./meta");
 const { resolveString, resolveValue } = require("./placeholders");
 const { safeDeferReply, safeEditReply, safeReply } = require("../safereply");
 
 const actionIds = new Set([
-    "reply",
-    "sendMessage",
-    "editReply",
-    "sendTyping",
+    "addCoins",
     "addReaction",
-    "deleteMessage",
     "addRole",
-    "removeRole",
-    "timeout",
+    "addTag",
+    "closeThread",
+    "createChannel",
+    "createThread",
+    "crosspostMessage",
+    "deleteChannel",
+    "deleteMessage",
+    "deleteThread",
+    "editChannel",
+    "editMessage",
+    "editReply",
+    "editThread",
     "evalJavaScript",
-    "setMeta",
+    "lockThread",
     "addMeta",
+    "metaAdd",
+    "metaListAdd",
+    "metaListRemove",
+    "metaRemove",
+    "metaSet",
+    "metaSubtract",
+    "metaToggle",
+    "openThread",
+    "pinMessage",
+    "randomAction",
+    "removeCoins",
+    "removeReaction",
+    "removeRole",
+    "removeTag",
+    "reply",
+    "resetCooldown",
+    "sendMessage",
+    "sendPrivateMessage",
+    "sendRequest",
+    "sendTyping",
+    "setCoins",
+    "setCooldown",
+    "setMeta",
+    "setTag",
+    "showModal",
+    "startThread",
+    "timeout",
+    "timeoutMember",
+    "unlockThread",
+    "unpinMessage",
     "deleteMeta",
     "log",
 ]);
@@ -47,51 +92,162 @@ async function runAction(action, context) {
         throw new Error("Action is missing an id.");
     }
 
-    if (!await context.evaluateConditions(action.conditions, context)) return;
+    if (!await context.evaluateConditions(action.conditions, context)) {
+        await runNotMetActions(action.conditions, context);
+        return;
+    }
 
     const args = action.id === "evalJavaScript"
         ? action.args || {}
         : await resolveValue(action.args || {}, context);
 
     switch (action.id) {
-        case "reply":
-            await reply(args, context);
-            break;
-        case "sendMessage":
-            await sendMessage(args, context);
-            break;
-        case "editReply":
-            await editReply(args, context);
-            break;
-        case "sendTyping":
-            await sendTyping(context);
+        case "addCoins":
+            await addMetaValue(context, "coins", args.amount);
             break;
         case "addReaction":
             await addReaction(args, context);
             break;
-        case "deleteMessage":
-            await deleteMessage(context);
-            break;
         case "addRole":
             await updateRole(args, context, "add");
             break;
-        case "removeRole":
-            await updateRole(args, context, "remove");
+        case "addTag":
+            await updateTags(args, context, "add");
             break;
-        case "timeout":
-            await timeoutMember(args, context);
+        case "closeThread":
+            await editThreadState(context, {
+                archived: true,
+            });
+            break;
+        case "createChannel":
+            await createChannel(args, context);
+            break;
+        case "createThread":
+            await createThread(args, context);
+            break;
+        case "crosspostMessage":
+            await crosspostMessage(context);
+            break;
+        case "deleteChannel":
+            await deleteChannel(context);
+            break;
+        case "deleteMessage":
+            await deleteMessage(context);
+            break;
+        case "deleteThread":
+            await deleteThread(context);
+            break;
+        case "editChannel":
+            await editChannel(args, context);
+            break;
+        case "editMessage":
+            await editMessage(args, context);
+            break;
+        case "editReply":
+            await editReply(args, context);
+            break;
+        case "editThread":
+            await editThread(args, context);
             break;
         case "evalJavaScript":
             await evalJavaScript(args, context);
             break;
-        case "setMeta":
-            await setMetaValue(context, args.key, args.value);
+        case "lockThread":
+            await editThreadState(context, {
+                locked: true,
+            });
             break;
         case "addMeta":
+        case "metaAdd":
             await addMetaValue(context, args.key, args.value);
             break;
+        case "metaListAdd":
+            await updateMetaList(context, args, "add");
+            break;
+        case "metaListRemove":
+            await updateMetaList(context, args, "remove");
+            break;
         case "deleteMeta":
+        case "metaRemove":
             await deleteMetaValue(context, args.key);
+            break;
+        case "setMeta":
+        case "metaSet":
+            await setMetaValue(context, args.key, args.value);
+            break;
+        case "metaSubtract":
+            await addMetaValue(context, args.key, -Number(args.value || 0));
+            break;
+        case "metaToggle":
+            await setMetaValue(context, args.key, !toBoolean(await getMetaValue(context, args.key)));
+            break;
+        case "openThread":
+            await editThreadState(context, {
+                archived: false,
+            });
+            break;
+        case "pinMessage":
+            await pinMessage(context);
+            break;
+        case "randomAction":
+            await randomAction(args, context);
+            break;
+        case "removeCoins":
+            await addMetaValue(context, "coins", -Number(args.amount || 0));
+            break;
+        case "removeReaction":
+            await removeReaction(args, context);
+            break;
+        case "removeRole":
+            await updateRole(args, context, "remove");
+            break;
+        case "removeTag":
+            await updateTags(args, context, "remove");
+            break;
+        case "reply":
+            await reply(args, context);
+            break;
+        case "resetCooldown":
+            await deleteMetaValue(context, cooldownKey(args.value));
+            break;
+        case "sendMessage":
+            await sendMessage(args, context);
+            break;
+        case "sendPrivateMessage":
+            await sendPrivateMessage(args, context);
+            break;
+        case "sendRequest":
+            await sendRequest(args, context);
+            break;
+        case "sendTyping":
+            await sendTyping(context);
+            break;
+        case "setCoins":
+            await setMetaValue(context, "coins", Number(args.amount || 0));
+            break;
+        case "setCooldown":
+            await setMetaValue(context, cooldownKey(args.value), Date.now() + Number(args.duration || 0) * 1000);
+            break;
+        case "setTag":
+            await updateTags(args, context, "set");
+            break;
+        case "showModal":
+            await showModal(args, context);
+            break;
+        case "startThread":
+            await startThread(args, context);
+            break;
+        case "timeout":
+        case "timeoutMember":
+            await timeoutMember(args, context);
+            break;
+        case "unlockThread":
+            await editThreadState(context, {
+                locked: false,
+            });
+            break;
+        case "unpinMessage":
+            await unpinMessage(context);
             break;
         case "log":
             context.logger.info(await resolveString(args.message || args.value || "", context));
@@ -158,6 +314,227 @@ async function deleteMessage(context) {
     if (!context.message?.deletable) return;
 
     await context.message.delete();
+}
+
+async function editMessage(args, context) {
+    const message = context.message || await fetchInteractionReply(context);
+    const payload = await buildMessagePayload(args, context);
+    payload.flags &= ~MessageFlags.Ephemeral;
+
+    if (!message?.editable) {
+        throw new Error("editMessage action could not resolve an editable message.");
+    }
+
+    await message.edit(payload);
+}
+
+async function sendPrivateMessage(args, context) {
+    if (!context.user?.send) {
+        throw new Error("sendPrivateMessage action needs a user context.");
+    }
+
+    try {
+        const payload = await buildMessagePayload(args, context);
+        payload.flags &= ~MessageFlags.Ephemeral;
+
+        await context.user.send(payload);
+    } catch (error) {
+        context.logger.warn(`Could not send a private YAML message to ${context.user?.id}:`, error.message);
+    }
+}
+
+async function createChannel(args, context) {
+    if (!context.guild?.channels) {
+        throw new Error("createChannel action needs a guild context.");
+    }
+
+    await context.guild.channels.create({
+        name: String(args.value),
+        type: getChannelType(args["channel-type"] || args.channelType || "text"),
+        parent: args.parent ? String(args.parent) : undefined,
+        topic: args.description ? String(args.description) : undefined,
+        permissionOverwrites: getPermissionOverwrites(args),
+    });
+}
+
+async function editChannel(args, context) {
+    const channel = await resolveChannel(args.channel, context);
+
+    if (!channel?.edit) {
+        throw new Error("editChannel action could not resolve an editable channel.");
+    }
+
+    await channel.edit({
+        name: args.value ? String(args.value) : undefined,
+        parent: args.parent ? String(args.parent) : undefined,
+        topic: args.description ? String(args.description) : undefined,
+        permissionOverwrites: getPermissionOverwrites(args),
+    });
+}
+
+async function deleteChannel(context) {
+    if (!context.channel?.delete) {
+        throw new Error("deleteChannel action needs a deletable channel context.");
+    }
+
+    await context.channel.delete();
+}
+
+async function createThread(args, context) {
+    const channel = await resolveChannel(args.channel, context);
+
+    if (!channel?.threads?.create) {
+        throw new Error("createThread action needs a channel that can create threads.");
+    }
+
+    const threadOptions = {
+        name: String(args.value),
+        autoArchiveDuration: getArchiveDuration(args.duration),
+    };
+
+    if (Array.isArray(args.tags) || args.tags) {
+        threadOptions.appliedTags = list(args.tags);
+    }
+
+    if (args.private && channel.type !== ChannelType.GuildForum) {
+        threadOptions.type = ChannelType.PrivateThread;
+    }
+
+    if (channel.type === ChannelType.GuildForum) {
+        threadOptions.message = await buildMessagePayload(args, context);
+    }
+
+    await channel.threads.create(threadOptions);
+}
+
+async function startThread(args, context) {
+    if (!context.message?.startThread) {
+        throw new Error("startThread action needs a message context.");
+    }
+
+    await context.message.startThread({
+        name: String(args.value),
+        autoArchiveDuration: getArchiveDuration(args.duration),
+    });
+}
+
+async function editThread(args, context) {
+    const thread = getThread(context);
+
+    await thread.edit({
+        name: args.value ? String(args.value) : undefined,
+        autoArchiveDuration: getArchiveDuration(args.duration),
+        appliedTags: args.tags ? list(args.tags) : undefined,
+    });
+}
+
+async function editThreadState(context, patch) {
+    const thread = getThread(context);
+
+    await thread.edit(patch);
+}
+
+async function deleteThread(context) {
+    const thread = getThread(context);
+
+    await thread.delete();
+}
+
+async function updateTags(args, context, mode) {
+    const thread = getThread(context);
+    const values = list(args.value);
+    const current = thread.appliedTags || [];
+    let next;
+
+    if (mode === "set") next = values;
+    else if (mode === "add") next = [...new Set([...current, ...values])];
+    else next = current.filter((tag) => !values.includes(tag));
+
+    await thread.setAppliedTags(next);
+}
+
+async function crosspostMessage(context) {
+    if (!context.message?.crosspost) {
+        throw new Error("crosspostMessage action needs a crosspostable message context.");
+    }
+
+    await context.message.crosspost();
+}
+
+async function pinMessage(context) {
+    const message = context.message || await fetchInteractionReply(context);
+
+    await message.pin();
+}
+
+async function unpinMessage(context) {
+    const message = context.message || await fetchInteractionReply(context);
+
+    await message.unpin();
+}
+
+async function removeReaction(args, context) {
+    const message = context.message || await fetchInteractionReply(context);
+    const values = list(args.value);
+
+    if (!values.length) {
+        await message.reactions.removeAll();
+        return;
+    }
+
+    for (const value of values) {
+        const reaction = message.reactions.cache.get(value)
+            || message.reactions.cache.find((cachedReaction) => cachedReaction.emoji.toString() === value);
+
+        if (reaction) await reaction.users.remove(context.client.user.id);
+    }
+}
+
+async function showModal(args, context) {
+    if (!context.interaction?.showModal) {
+        throw new Error("showModal action needs an interaction context.");
+    }
+
+    const modal = new ModalBuilder()
+        .setTitle(String(args.title || "Modal"))
+        .setCustomId(String(args["custom-id"] || args.customId));
+
+    modal.addComponents(...(args.components || []).map(buildModalRow));
+
+    await context.interaction.showModal(modal);
+}
+
+async function randomAction(args, context) {
+    const actions = args.actions || [];
+
+    if (!actions.length) return;
+
+    await runAction(actions[Math.floor(Math.random() * actions.length)], context);
+}
+
+async function sendRequest(args, context) {
+    const headers = args.headers || {};
+    const request = await fetch(String(args.value), {
+        method: args.method || "GET",
+        headers,
+        body: args.body && String(args.method || "GET").toUpperCase() !== "GET"
+            ? typeof args.body === "string" ? args.body : JSON.stringify(args.body)
+            : undefined,
+    });
+    const text = await request.text();
+    let payload = text;
+
+    try {
+        payload = JSON.parse(text);
+    } catch {}
+
+    context.variables.data_status = request.status;
+    context.variables.data_ok = request.ok;
+    flattenData(payload, "data", context.variables);
+
+    if (Array.isArray(args["follow-up-actions"])) {
+        await runActions(args["follow-up-actions"], context);
+    }
 }
 
 async function evalJavaScript(args, context) {
@@ -234,7 +611,7 @@ async function updateRole(args, context, mode) {
 }
 
 async function timeoutMember(args, context) {
-    const member = await resolveMember(args.member || args.user, context);
+    const member = await resolveMember(args.member || args.user || args.value, context);
     const seconds = Number(args.duration || args.seconds || 60);
 
     if (!member?.timeout) {
@@ -242,6 +619,123 @@ async function timeoutMember(args, context) {
     }
 
     await member.timeout(seconds * 1000, args.reason || "YAML action timeout");
+}
+
+async function updateMetaList(context, args, mode) {
+    const current = await getMetaValue(context, args.key);
+    const values = Array.isArray(current) ? current : list(current).filter(Boolean);
+    const value = String(args.value);
+    const next = mode === "add"
+        ? [...new Set([...values, value])]
+        : values.filter((entry) => entry !== value);
+
+    await setMetaValue(context, args.key, next);
+}
+
+async function runNotMetActions(conditions, context) {
+    for (const condition of conditions || []) {
+        if (Array.isArray(condition["not-met-actions"]) && !await context.evaluateConditions([condition], context)) {
+            await runActions(condition["not-met-actions"], context);
+        }
+    }
+}
+
+function buildModalRow(config) {
+    const inputConfig = config.component || config;
+    const input = new TextInputBuilder()
+        .setCustomId(String(inputConfig["custom-id"] || inputConfig.customId))
+        .setLabel(String(config.label || inputConfig.label || inputConfig["custom-id"] || inputConfig.customId))
+        .setStyle(getTextInputStyle(inputConfig.style));
+
+    if (inputConfig.placeholder) input.setPlaceholder(String(inputConfig.placeholder));
+    if (inputConfig.value) input.setValue(String(inputConfig.value));
+    if (inputConfig.required !== undefined) input.setRequired(Boolean(inputConfig.required));
+    if (inputConfig["min-length"] !== undefined) input.setMinLength(Number(inputConfig["min-length"]));
+    if (inputConfig["max-length"] !== undefined) input.setMaxLength(Number(inputConfig["max-length"]));
+
+    return new ActionRowBuilder().addComponents(input);
+}
+
+function getTextInputStyle(value) {
+    return String(value || "short").toLowerCase() === "paragraph"
+        ? TextInputStyle.Paragraph
+        : TextInputStyle.Short;
+}
+
+function getChannelType(value) {
+    const normalized = String(value).replaceAll("_", "").replaceAll("-", "").toLowerCase();
+    const types = {
+        announcement: ChannelType.GuildAnnouncement,
+        category: ChannelType.GuildCategory,
+        forum: ChannelType.GuildForum,
+        media: ChannelType.GuildMedia,
+        stage: ChannelType.GuildStageVoice,
+        text: ChannelType.GuildText,
+        voice: ChannelType.GuildVoice,
+    };
+
+    return types[normalized] ?? ChannelType.GuildText;
+}
+
+function getArchiveDuration(duration) {
+    const minutes = Math.ceil(Number(duration || 3600) / 60);
+    const allowed = [
+        ThreadAutoArchiveDuration.OneHour,
+        ThreadAutoArchiveDuration.OneDay,
+        ThreadAutoArchiveDuration.ThreeDays,
+        ThreadAutoArchiveDuration.OneWeek,
+    ];
+
+    return allowed.find((value) => value >= minutes) || ThreadAutoArchiveDuration.OneWeek;
+}
+
+function getPermissionOverwrites(args) {
+    const overwrites = args["permission-overwrites"] || args.permissionOverwrites;
+
+    if (!Array.isArray(overwrites)) return undefined;
+
+    return overwrites.map((overwrite) => ({
+        id: String(overwrite.id),
+        allow: list(overwrite.allow).map(normalizePermission).filter(Boolean),
+        deny: list(overwrite.deny).map(normalizePermission).filter(Boolean),
+    }));
+}
+
+function normalizePermission(value) {
+    const normalized = String(value).replaceAll("_", "").toLowerCase();
+    const key = Object.keys(PermissionFlagsBits).find((permission) => permission.toLowerCase() === normalized);
+
+    return key ? PermissionFlagsBits[key] : null;
+}
+
+function getThread(context) {
+    const channel = context.channel;
+
+    if (!channel?.isThread?.()) {
+        throw new Error("This action needs a thread context.");
+    }
+
+    return channel;
+}
+
+function flattenData(value, prefix, target) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+        for (const [key, entry] of Object.entries(value)) {
+            flattenData(entry, `${prefix}_${key}`, target);
+        }
+
+        return;
+    }
+
+    target[prefix] = Array.isArray(value) ? value.join(", ") : value;
+}
+
+function cooldownKey(value) {
+    return `cooldown:${value || "default"}`;
+}
+
+function toBoolean(value) {
+    return value === true || String(value).toLowerCase() === "true";
 }
 
 async function resolveChannel(value, context) {
@@ -254,6 +748,13 @@ async function resolveChannel(value, context) {
     if (cached) return cached;
 
     return context.client.channels.fetch(id);
+}
+
+function list(value) {
+    if (Array.isArray(value)) return value.map(String);
+    if (value === undefined || value === null || value === "") return [];
+
+    return [String(value)];
 }
 
 async function resolveMember(value, context) {
@@ -379,6 +880,18 @@ function validateActions(actions, messages = new Map()) {
             continue;
         }
 
+        if (Array.isArray(action.args?.actions)) {
+            const validation = validateActions(action.args.actions, messages);
+
+            if (!validation.valid) return validation;
+        }
+
+        if (Array.isArray(action.args?.["follow-up-actions"])) {
+            const validation = validateActions(action.args["follow-up-actions"], messages);
+
+            if (!validation.valid) return validation;
+        }
+
         if (!actionIds.has(action.id)) {
             return {
                 valid: false,
@@ -397,7 +910,7 @@ function validateActions(actions, messages = new Map()) {
 }
 
 function validateActionMessage(action, messages) {
-    if (!["reply", "sendMessage", "editReply"].includes(action.id)) {
+    if (!["reply", "sendMessage", "sendPrivateMessage", "editMessage", "editReply"].includes(action.id)) {
         return {
             valid: true,
         };
