@@ -53,6 +53,9 @@ client.buttons = new Collection();
 installCrashGuard(client);
 main();
 
+/**
+ * Starts the bot and opens the Discord session.
+ */
 async function main() {
     try {
         await loadEvents(client);

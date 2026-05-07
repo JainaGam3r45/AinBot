@@ -31,6 +31,11 @@ module.exports = {
             return interaction.editReply({ content: "⚠️ El código incluye funciones o propiedades restringidas." });
         }
 
+        /**
+         * Evaluates code and rejects when it takes too long.
+         * @param {string} code JavaScript expression to evaluate.
+         * @param {number} timeout Maximum execution time in milliseconds.
+         */
         const evalWithTimeout = (code, timeout = 3000) => {
             return new Promise((resolve, reject) => {
                 const evalPromise = eval(`(async () => { return ${code} })()`);

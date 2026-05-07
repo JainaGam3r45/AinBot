@@ -32,6 +32,9 @@ function installCrashGuard(client) {
     }
 
     client.crashGuard = {
+        /**
+         * Removes every crash guard listener.
+         */
         dispose() {
             for (const [eventName, handler] of processHandlers) {
                 process.removeListener(eventName, handler);
@@ -48,19 +51,36 @@ function installCrashGuard(client) {
     logger.info("Crash guard is active.");
 }
 
+/**
+ * Logs an unhandled rejected promise without shutting down.
+ * @param {unknown} reason Rejection reason.
+ */
 function handleUnhandledRejection(reason) {
     logger.recovered("Promesa rechazada sin manejar", normalizeError(reason));
 }
 
+/**
+ * Logs a process warning.
+ * @param {Error} warning Warning emitted by Node.js.
+ */
 function handleWarning(warning) {
     logger.warn("Advertencia del proceso:", warning);
 }
 
+/**
+ * Logs an uncaught exception and shuts the bot down.
+ * @param {Client} client Discord client to shut down.
+ * @param {Error} error Uncaught exception.
+ */
 function handleCriticalException(client, error) {
     logger.critical("Excepción no capturada", error);
     shutdown(client, 1);
 }
 
+/**
+ * Logs an invalid Discord session and shuts the bot down.
+ * @param {Client} client Discord client to shut down.
+ */
 function handleInvalidatedSession(client) {
     logger.critical("La sesión de Discord fue invalidada");
     shutdown(client, 1);
@@ -83,6 +103,10 @@ function shutdown(client, exitCode) {
     }
 }
 
+/**
+ * Converts any thrown value into an Error.
+ * @param {unknown} value Value to normalize.
+ */
 function normalizeError(value) {
     if (value instanceof Error) return value;
 

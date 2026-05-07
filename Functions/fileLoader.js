@@ -16,6 +16,10 @@ async function loadFiles(dirName) {
     return files;
 }
 
+/**
+ * Finds JavaScript files inside a directory and its subfolders.
+ * @param {string} directory Directory path to scan.
+ */
 async function findJavaScriptFiles(directory) {
     const entries = await readdir(directory, {
         withFileTypes: true,

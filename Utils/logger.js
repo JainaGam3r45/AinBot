@@ -148,6 +148,10 @@ class Logger {
     }
 }
 
+/**
+ * Formats a value for console output.
+ * @param {unknown} value Value to format.
+ */
 function formatValue(value) {
     if (value instanceof Error) {
         return formatError(value);
@@ -163,6 +167,10 @@ function formatValue(value) {
     });
 }
 
+/**
+ * Formats an error with stack, code, and cause details.
+ * @param {Error} error Error to format.
+ */
 function formatError(error) {
     const details = [
         error.stack || error.message,
@@ -179,6 +187,14 @@ function formatError(error) {
     return details.join("\n");
 }
 
+/**
+ * Formats a detailed incident log entry.
+ * @param {object} incident Incident details.
+ * @param {string} incident.context Context where the incident happened.
+ * @param {Error} incident.error Error to record.
+ * @param {string} incident.severity Severity label.
+ * @param {Date} incident.timestamp Incident timestamp.
+ */
 function formatIncident({ context, error, severity, timestamp }) {
     const memory = process.memoryUsage();
 
@@ -205,6 +221,11 @@ function formatIncident({ context, error, severity, timestamp }) {
     ].join("\n");
 }
 
+/**
+ * Converts any thrown value into an Error.
+ * @param {unknown} value Value to normalize.
+ * @param {string} fallbackMessage Message to use when the value is empty.
+ */
 function normalizeError(value, fallbackMessage) {
     if (value instanceof Error) return value;
 
@@ -222,6 +243,10 @@ function normalizeError(value, fallbackMessage) {
     return new Error(message);
 }
 
+/**
+ * Builds the daily anti-crash log file path.
+ * @param {Date} date Date used for the file name.
+ */
 function getLogFilePath(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -230,10 +255,18 @@ function getLogFilePath(date) {
     return path.join(logsDirectory, `anticrash-${year}-${month}-${day}.log`);
 }
 
+/**
+ * Converts bytes to rounded megabytes.
+ * @param {number} bytes Byte count.
+ */
 function toMegabytes(bytes) {
     return Math.round(bytes / 1024 / 1024);
 }
 
+/**
+ * Formats a date as HH:mm:ss.
+ * @param {Date} date Date to format.
+ */
 function formatTime(date) {
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
