@@ -1,10 +1,11 @@
-const { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
+const { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, InteractionContextType, MessageFlags, PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
     developer: true,
     data: new SlashCommandBuilder()
     .setName('eval')
     .setDescription("⛔ ¡Evalúa un código en JavaScript!")
+    .setContexts(InteractionContextType.Guild)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addStringOption(option => option
         .setName("code")
@@ -21,12 +22,12 @@ module.exports = {
         const { options, user } = interaction;
         const code = options.getString("code");
 
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         // Prevenir acceso a comandos peligrosos
         const dangerousGlobals = ['global', 'process', 'require', 'child_process', 'fs', 'eval'];
         if (new RegExp(dangerousGlobals.join('|')).test(code)) {
-            return interaction.editReply({ content: "⚠️ El código incluye funciones o propiedades restringidas.", ephemeral: true });
+            return interaction.editReply({ content: "⚠️ El código incluye funciones o propiedades restringidas." });
         }
 
         const evalWithTimeout = (code, timeout = 3000) => {

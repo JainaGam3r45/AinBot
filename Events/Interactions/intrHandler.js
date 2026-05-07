@@ -1,8 +1,8 @@
-const { ChatInputCommandInteraction } = require("discord.js");
+const { ChatInputCommandInteraction, Events, MessageFlags } = require("discord.js");
 const logger = require("../../Utils/logger");
 
 module.exports = {
-    name: "interactionCreate",
+    name: Events.InteractionCreate,
     /**
      *
      * @param {ChatInputCommandInteraction} interaction
@@ -13,13 +13,13 @@ module.exports = {
             if (!command)
                 return interaction.reply({
                     content: `Comando desactualizado o ya no está disponible.`,
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
 
             if (command.developer && !process.env.DEVELOPERS_IDS.includes(interaction.user.id))
                 return interaction.reply({
                     content: `¡Ups! Has descubierto un comando de desarrollador.`,
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
 
             try {
@@ -29,7 +29,7 @@ module.exports = {
 
                 const message = {
                     content: "There was an error while running this command.",
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 };
 
                 if (interaction.deferred || interaction.replied) {

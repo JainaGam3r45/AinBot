@@ -1,10 +1,10 @@
-const { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, InteractionContextType } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('¡Obtener el ping actual del bot!')
-    .setDMPermission(false),
+    .setContexts(InteractionContextType.Guild),
     /**
      *
      * @param {ChatInputCommandInteraction} interaction
@@ -25,7 +25,7 @@ module.exports = {
         )
         .setFooter({ 
             text: `Solicitado por ${interaction.user.username}`, 
-            iconURL: interaction.user.displayAvatarURL({ dynamic: true }) 
+            iconURL: interaction.user.displayAvatarURL()
         });
 
         await interaction.reply({ embeds: [pingEmbed] });
