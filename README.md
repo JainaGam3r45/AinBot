@@ -10,6 +10,10 @@
 ## Motivación
 El objetivo principal de revivir este proyecto es proporcionar un recurso educativo para la comunidad de desarrollo de Discord, mostrando cómo se estructuraba un bot en versiones antiguas de discord.js y cómo se puede actualizar a la versión más reciente (discord.js v14) utilizando las mejores prácticas modernas de JavaScript y Discord bot development.
 
+## Documentación
+
+- [Motor de comandos y eventos YAML](docs/yaml-engine.md)
+
 ## Instalación
 Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/)** instalado.
 

@@ -1,24 +1,24 @@
-# YAML command and event engine
+# Motor de comandos y eventos YAML
 
-This bot loads commands, events, and reusable Display Component messages from YAML files. JavaScript now stays in the core runtime under `Utils` and `Events/core.js`; server behavior should be added through YAML.
+Este bot carga comandos, eventos y mensajes reutilizables con Display Components desde archivos YAML. JavaScript queda reservado para el núcleo de ejecución dentro de `Utils` y `Events/core.js`; el comportamiento del servidor debería agregarse mediante YAML.
 
-## Folders
+## Carpetas
 
-- `configs/commands`: slash commands.
-- `configs/events`: event scripts.
-- `configs/messages`: reusable Display Component message templates.
-- `Utils/yamlengine`: the runtime that parses YAML, renders Display Components, evaluates conditions, and runs actions.
-- `Events/core.js`: the small Discord bridge that loads YAML commands and routes interactions.
+- `configs/commands`: comandos slash.
+- `configs/events`: scripts de eventos.
+- `configs/messages`: plantillas reutilizables de mensajes con Display Components.
+- `Utils/yamlengine`: runtime que interpreta YAML, renderiza Display Components, evalúa condiciones y ejecuta acciones.
+- `Events/core.js`: puente ligero con Discord que carga comandos YAML y enruta interacciones.
 
-Files ending in `.yml` or `.yaml` are loaded recursively. Prefix a file or folder with `_` to disable it without deleting it.
+Los archivos terminados en `.yml` o `.yaml` se cargan de forma recursiva. Para desactivar un archivo o carpeta sin eliminarlo, agrega `_` al inicio de su nombre.
 
-## Commands
+## Comandos
 
-Create a file in `configs/commands`.
+Crea un archivo dentro de `configs/commands`.
 
 ```yml
 name: hello
-description: "Send a YAML response."
+description: "Envía una respuesta desde YAML."
 contexts:
   - guild
 permissions:
@@ -26,7 +26,7 @@ permissions:
 developer: false
 options:
   - name: target
-    description: "Choose a user."
+    description: "Elige un usuario."
     type: user
     required: false
 actions:
@@ -35,16 +35,16 @@ actions:
       ephemeral: true
       components:
         - type: text-display
-          content: "Hello %user_mention%. Target: %option_target_mention%"
+          content: "Hola %user_mention%. Objetivo: %option_target_mention%"
 ```
 
-Supported option types are `string`, `integer`, `number`, `boolean`, `user`, `channel`, `role`, and `mentionable`. String and number options can use `choices`, `min-length`, `max-length`, `min-value`, and `max-value` when Discord supports them.
+Los tipos de opciones soportados son `string`, `integer`, `number`, `boolean`, `user`, `channel`, `role` y `mentionable`. Las opciones de texto y número pueden usar `choices`, `min-length`, `max-length`, `min-value` y `max-value` cuando Discord lo permite.
 
-Command option placeholders include `%option_name%`, `%option_name_id%`, `%option_name_mention%`, `%option_name_is_provided%`, `%option_name_username%`, and `%option_name_display_name%`.
+Los placeholders de opciones incluyen `%option_name%`, `%option_name_id%`, `%option_name_mention%`, `%option_name_is_provided%`, `%option_name_username%` y `%option_name_display_name%`.
 
-## Events
+## Eventos
 
-Create a file in `configs/events`.
+Crea un archivo dentro de `configs/events`.
 
 ```yml
 name: welcome-message
@@ -55,16 +55,16 @@ actions:
       channel: "welcome"
       components:
         - type: text-display
-          content: "Welcome %user_mention% to %guild_name%."
+          content: "Bienvenido %user_mention% a %guild_name%."
 ```
 
-Supported triggers are `messageCreate`, `guildMemberAdd`, `guildMemberRemove`, `buttonClick`, and `selectMenuSubmit`.
+Los triggers soportados son `messageCreate`, `guildMemberAdd`, `guildMemberRemove`, `buttonClick` y `selectMenuSubmit`.
 
-For button and select triggers, the custom id is split by `_`. A button with `script_ticket_open` gives `%button_custom_id%`, `%button_args_count%`, `%button_args%`, `%button_arg_0%`, and `%button_arg_1%`.
+En botones y selects, el custom id se separa por `_`. Un botón con `script_ticket_open` genera `%button_custom_id%`, `%button_args_count%`, `%button_args%`, `%button_arg_0%` y `%button_arg_1%`.
 
-## Messages
+## Mensajes
 
-Create reusable message templates in `configs/messages`.
+Crea plantillas reutilizables de mensajes dentro de `configs/messages`.
 
 ```yml
 id: default-welcome
@@ -74,36 +74,36 @@ components:
     color: "#2f80ed"
     components:
       - type: text-display
-        content: "# Hello, %user_display_name%"
+        content: "# Hola, %user_display_name%"
       - type: separator
         spacing: 1
 ```
 
-Use a template from an action with `message: default-welcome`. Inline `components` are also supported.
+Usa una plantilla desde una acción con `message: default-welcome`. También se soportan `components` definidos en línea.
 
-Supported components are `text-display`, `container`, `section`, `separator`, `action-row`, `button`, `select-menu`, `thumbnail`, `media-gallery`, and `file`. YAML messages are sent with Discord's `IsComponentsV2` flag, so they must not include embeds or normal message content. If you provide `content`, the engine converts it into a `text-display` component.
+Los componentes soportados son `text-display`, `container`, `section`, `separator`, `action-row`, `button`, `select-menu`, `thumbnail`, `media-gallery` y `file`. Los mensajes YAML se envían con la flag `IsComponentsV2` de Discord, así que no deben incluir embeds ni contenido normal de mensaje. Si defines `content`, el motor lo convierte en un componente `text-display`.
 
-## Actions
+## Acciones
 
-Supported actions:
+Acciones soportadas:
 
-- `reply`: replies to the current interaction or message.
-- `sendMessage`: sends to `args.channel` or the current channel.
-- `editReply`: edits the current interaction reply.
-- `sendTyping`: sends a typing indicator in the current channel.
-- `addReaction`: reacts to the current message.
-- `deleteMessage`: deletes the current message when possible.
-- `addRole` and `removeRole`: update the current or configured member.
-- `timeout`: times out the current or configured member. `duration` is in seconds.
-- `evalJavaScript`: evaluates a JavaScript expression for trusted developer commands and renders the result through Display Components.
-- `setMeta`, `addMeta`, and `deleteMeta`: store scoped metadata for the current guild and user.
-- `log`: writes a message through the central logger.
+- `reply`: responde a la interacción o mensaje actual.
+- `sendMessage`: envía un mensaje a `args.channel` o al canal actual.
+- `editReply`: edita la respuesta actual de la interacción.
+- `sendTyping`: envía el indicador de escritura en el canal actual.
+- `addReaction`: reacciona al mensaje actual.
+- `deleteMessage`: elimina el mensaje actual cuando sea posible.
+- `addRole` y `removeRole`: actualizan el miembro actual o configurado.
+- `timeout`: aplica timeout al miembro actual o configurado. `duration` se expresa en segundos.
+- `evalJavaScript`: evalúa una expresión JavaScript para comandos de desarrollador confiables y renderiza el resultado con Display Components.
+- `setMeta`, `addMeta` y `deleteMeta`: guardan metadatos con alcance por guild y usuario.
+- `log`: escribe un mensaje mediante el logger central.
 
-Meta values use the configured database. If `DATABASE_PROVIDER=none`, they are stored in memory and lost when the process restarts.
+Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`, se guardan en memoria y se pierden al reiniciar el proceso.
 
-## Conditions
+## Condiciones
 
-Supported conditions:
+Condiciones soportadas:
 
 - `isBot`
 - `isUser`
@@ -115,7 +115,7 @@ Supported conditions:
 - `allOf`
 - `noneOf`
 
-Prefix an id with `!` or set `inverse: true` to invert it.
+Para invertir una condición, antepone `!` al id o define `inverse: true`.
 
 ```yml
 conditions:
@@ -127,8 +127,8 @@ conditions:
 
 ## Placeholders
 
-Common placeholders include `%bot_username%`, `%guild_name%`, `%channel_mention%`, `%user_mention%`, `%user_display_name%`, `%message_content%`, `%interaction_latency%`, `%api_latency%`, `%date%`, `%hour%`, `%minute%`, and `%meta_key%`.
+Los placeholders comunes incluyen `%bot_username%`, `%guild_name%`, `%channel_mention%`, `%user_mention%`, `%user_display_name%`, `%message_content%`, `%interaction_latency%`, `%api_latency%`, `%date%`, `%hour%`, `%minute%` y `%meta_key%`.
 
-Placeholders are available in strings across commands, events, actions, and message components. To choose random text, use `random: ["First value", "Second value"]` where a normal string value would go.
+Los placeholders están disponibles en strings dentro de comandos, eventos, acciones y componentes de mensaje. Para elegir texto aleatorio, usa `random: ["Primer valor", "Segundo valor"]` donde normalmente iría un string.
 
-The default `ping.yml` and `eval.yml` files show how old JavaScript commands can be expressed as YAML commands. `ping.yml` uses placeholders and normal Display Components. `eval.yml` keeps the dangerous work inside the built-in `evalJavaScript` action, while the command name, option, permissions, and success/error layouts live in YAML.
+Los archivos predeterminados `ping.yml` y `eval.yml` muestran cómo expresar comandos JavaScript antiguos como comandos YAML. `ping.yml` usa placeholders y Display Components normales. `eval.yml` mantiene el trabajo peligroso dentro de la acción integrada `evalJavaScript`, mientras que el nombre del comando, la opción, los permisos y los layouts de éxito/error viven en YAML.
