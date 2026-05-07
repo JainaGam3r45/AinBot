@@ -1,17 +1,23 @@
 async function loadEvents (client) {
     const { loadFiles } = require('../Functions/fileLoader');
-    const CustomLogger = require('../Utils/CustomLogger');
-    const send = new CustomLogger();
+    const logger = require("./logger");
 
     await client.events.clear();
 
-    const Files = await loadFiles("Events");
+    const files = await loadFiles("Events");
 
-    for (const file of Files) {
+    for (const file of files) {
         try {
             const event = require(file);
 
-            const execute = (...args) => event.execute(...args, client);
+            const execute = async (...args) => {
+                try {
+                    await event.execute(...args, client);
+                } catch (error) {
+                    logger.error(`Event ${event.name} failed.`, error);
+                }
+            };
+
             client.events.set(event.name, execute);
 
             if (event.rest) {
@@ -22,13 +28,13 @@ async function loadEvents (client) {
                 else client.on(event.name, execute);
             }
 
-            send.log(`&b[${event.name}] &a${file} ✅`);
+            logger.debug(`Loaded event ${event.name} from ${file}`);
         } catch (error) {
-            send.log(`&c[Error] &7${file}: &4${error.message} ❌`);
+            logger.error(`Could not load event from ${file}.`, error);
         }
     }
 
-    return send.log(`&2[✅] Events loading completed.`);
+    logger.info("Events loading completed.");
 }
 
 module.exports = { loadEvents };

@@ -1,8 +1,6 @@
 const { loadCommands } = require("../../Utils/commandHandler");
 const { Client, ActivityType, PresenceUpdateStatus } = require('discord.js');
-
-const CustomLogger = require('../../Utils/CustomLogger');
-const send = new CustomLogger();
+const logger = require("../../Utils/logger");
 
 module.exports = {
     name: 'ready',
@@ -13,11 +11,11 @@ module.exports = {
      */
     async execute(client) {
 
-        loadCommands(client); // Cargar comandos...
+        await loadCommands(client);
 
         client.user.setPresence({ activities: [{ name: 'Ainbot', type: ActivityType.Playing }], status: PresenceUpdateStatus.Idle });
 
-        send.log(`&b[INFO] &a${client.user.tag} &f(&7${client.user.id}&f) is online and ready to serve you.`);
+        logger.info(`${client.user.tag} (${client.user.id}) is online and ready to serve you.`);
 
     },
 };

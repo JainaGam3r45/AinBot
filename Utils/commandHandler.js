@@ -1,33 +1,32 @@
 async function loadCommands(client) {
     const { loadFiles } = require("../Functions/fileLoader");
-    const CustomLogger = require('../Utils/CustomLogger');
     const path = require('path');
-    const send = new CustomLogger();
+    const logger = require("./logger");
 
     await client.application.commands.cache.clear();
     await client.commands.clear();
 
-    let commandsArray = [];
+    const commands = [];
 
-    const Files = await loadFiles("Commands");
+    const files = await loadFiles("Commands");
 
-    Files.forEach((file) => {
-        const command = require(file);
-        const fileName = path.basename(file);
-        client.commands.set(command.data.name, command);
-
-        commandsArray.push(command.data.toJSON());
-
+    for (const file of files) {
         try {
-            send.log(`&b[${command.data.name}] &a${fileName} ✅`);
+            const command = require(file);
+            const fileName = path.basename(file);
+
+            client.commands.set(command.data.name, command);
+            commands.push(command.data.toJSON());
+
+            logger.debug(`Loaded command ${command.data.name} from ${fileName}`);
         } catch (error) {
-            send.log(`&c[Error] &7${fileName}: &4${error.message.padEnd(16)} ❌`);
+            logger.error(`Could not load command from ${file}.`, error);
         }
-    });
+    }
 
-    client.application.commands.set(commandsArray);
+    await client.application.commands.set(commands);
 
-    return send.log(`&b[INFO] &fCommands loading &acompleted&f. ✅`);
+    logger.info("Commands loading completed.");
 }
 
 module.exports = { loadCommands };
