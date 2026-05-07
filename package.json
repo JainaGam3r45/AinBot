@@ -5,10 +5,10 @@
   "main": "index.js",
   "packageManager": "bun@1.3.11",
   "scripts": {
-    "start": "bun scripts/start.js production",
-    "dev": "bun scripts/start.js development",
-    "start:dev": "bun scripts/start.js development",
-    "start:prod": "bun scripts/start.js production"
+    "start": "AINBOT_MODE=production NODE_ENV=production bun index.js",
+    "dev": "AINBOT_MODE=development NODE_ENV=development bun index.js",
+    "start:dev": "AINBOT_MODE=development NODE_ENV=development bun index.js",
+    "start:prod": "AINBOT_MODE=production NODE_ENV=production bun index.js"
   },
   "keywords": [
     "discord",
