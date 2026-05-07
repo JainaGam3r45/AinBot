@@ -1,5 +1,6 @@
 const { Client } = require("discord.js");
 const { loadMessageTemplates } = require("./yamlengine/messages");
+const { loadMetaDefinitions } = require("./yamlengine/meta");
 const { loadYamlEvents } = require("./yamlengine/events");
 
 /**
@@ -27,6 +28,7 @@ async function loadEvents (client) {
     await client.events.clear();
 
     client.yamlMessages ??= await loadMessageTemplates(logger);
+    client.yamlMetas ??= await loadMetaDefinitions(logger);
 
     const files = await loadFiles("Events");
     const eventGroups = new Map();

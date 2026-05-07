@@ -1,6 +1,7 @@
 const { Client } = require("discord.js");
 const { loadYamlCommands } = require("./yamlengine/commands");
 const { loadMessageTemplates } = require("./yamlengine/messages");
+const { loadMetaDefinitions } = require("./yamlengine/meta");
 
 /**
  * Loads slash command files and publishes them to Discord.
@@ -15,6 +16,7 @@ async function loadCommands(client) {
     const commands = [];
 
     client.yamlMessages = await loadMessageTemplates(logger);
+    client.yamlMetas = await loadMetaDefinitions(logger);
 
     const yamlCommands = await loadYamlCommands(client, client.yamlMessages, logger);
 

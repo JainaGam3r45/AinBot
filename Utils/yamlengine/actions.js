@@ -81,8 +81,10 @@ async function runActions(actions, context) {
 
 async function runAction(action, context) {
     if (Array.isArray(action.actions)) {
-        if (await context.evaluateConditions(action.conditions, context)) {
-            await runActions(action.actions, context);
+        const targetContext = await resolveTargetContext(action.target, context);
+
+        if (await targetContext.evaluateConditions(action.conditions, targetContext)) {
+            await runActions(action.actions, targetContext);
         }
 
         return;
@@ -92,165 +94,167 @@ async function runAction(action, context) {
         throw new Error("Action is missing an id.");
     }
 
-    if (!await context.evaluateConditions(action.conditions, context)) {
-        await runNotMetActions(action.conditions, context);
+    const targetContext = await resolveTargetContext(action.target, context);
+
+    if (!await targetContext.evaluateConditions(action.conditions, targetContext)) {
+        await runNotMetActions(action.conditions, targetContext);
         return;
     }
 
     const args = action.id === "evalJavaScript"
         ? action.args || {}
-        : await resolveValue(action.args || {}, context);
+        : await resolveValue(action.args || {}, targetContext);
 
     switch (action.id) {
         case "addCoins":
-            await addMetaValue(context, "coins", args.amount);
+            await addMetaValue(targetContext, "coins", args.amount);
             break;
         case "addReaction":
-            await addReaction(args, context);
+            await addReaction(args, targetContext);
             break;
         case "addRole":
-            await updateRole(args, context, "add");
+            await updateRole(args, targetContext, "add");
             break;
         case "addTag":
-            await updateTags(args, context, "add");
+            await updateTags(args, targetContext, "add");
             break;
         case "closeThread":
-            await editThreadState(context, {
+            await editThreadState(targetContext, {
                 archived: true,
             });
             break;
         case "createChannel":
-            await createChannel(args, context);
+            await createChannel(args, targetContext);
             break;
         case "createThread":
-            await createThread(args, context);
+            await createThread(args, targetContext);
             break;
         case "crosspostMessage":
-            await crosspostMessage(context);
+            await crosspostMessage(targetContext);
             break;
         case "deleteChannel":
-            await deleteChannel(context);
+            await deleteChannel(targetContext);
             break;
         case "deleteMessage":
-            await deleteMessage(context);
+            await deleteMessage(targetContext);
             break;
         case "deleteThread":
-            await deleteThread(context);
+            await deleteThread(targetContext);
             break;
         case "editChannel":
-            await editChannel(args, context);
+            await editChannel(args, targetContext);
             break;
         case "editMessage":
-            await editMessage(args, context);
+            await editMessage(args, targetContext);
             break;
         case "editReply":
-            await editReply(args, context);
+            await editReply(args, targetContext);
             break;
         case "editThread":
-            await editThread(args, context);
+            await editThread(args, targetContext);
             break;
         case "evalJavaScript":
-            await evalJavaScript(args, context);
+            await evalJavaScript(args, targetContext);
             break;
         case "lockThread":
-            await editThreadState(context, {
+            await editThreadState(targetContext, {
                 locked: true,
             });
             break;
         case "addMeta":
         case "metaAdd":
-            await addMetaValue(context, args.key, args.value);
+            await addMetaValue(targetContext, args.key, args.value);
             break;
         case "metaListAdd":
-            await updateMetaList(context, args, "add");
+            await updateMetaList(targetContext, args, "add");
             break;
         case "metaListRemove":
-            await updateMetaList(context, args, "remove");
+            await updateMetaList(targetContext, args, "remove");
             break;
         case "deleteMeta":
         case "metaRemove":
-            await deleteMetaValue(context, args.key);
+            await deleteMetaValue(targetContext, args.key);
             break;
         case "setMeta":
         case "metaSet":
-            await setMetaValue(context, args.key, args.value);
+            await setMetaValue(targetContext, args.key, args.value);
             break;
         case "metaSubtract":
-            await addMetaValue(context, args.key, -Number(args.value || 0));
+            await addMetaValue(targetContext, args.key, -Number(args.value || 0));
             break;
         case "metaToggle":
-            await setMetaValue(context, args.key, !toBoolean(await getMetaValue(context, args.key)));
+            await setMetaValue(targetContext, args.key, !toBoolean(await getMetaValue(targetContext, args.key)));
             break;
         case "openThread":
-            await editThreadState(context, {
+            await editThreadState(targetContext, {
                 archived: false,
             });
             break;
         case "pinMessage":
-            await pinMessage(context);
+            await pinMessage(targetContext);
             break;
         case "randomAction":
-            await randomAction(args, context);
+            await randomAction(args, targetContext);
             break;
         case "removeCoins":
-            await addMetaValue(context, "coins", -Number(args.amount || 0));
+            await addMetaValue(targetContext, "coins", -Number(args.amount || 0));
             break;
         case "removeReaction":
-            await removeReaction(args, context);
+            await removeReaction(args, targetContext);
             break;
         case "removeRole":
-            await updateRole(args, context, "remove");
+            await updateRole(args, targetContext, "remove");
             break;
         case "removeTag":
-            await updateTags(args, context, "remove");
+            await updateTags(args, targetContext, "remove");
             break;
         case "reply":
-            await reply(args, context);
+            await reply(args, targetContext);
             break;
         case "resetCooldown":
-            await deleteMetaValue(context, cooldownKey(args.value));
+            await deleteMetaValue(targetContext, cooldownKey(args.value));
             break;
         case "sendMessage":
-            await sendMessage(args, context);
+            await sendMessage(args, targetContext);
             break;
         case "sendPrivateMessage":
-            await sendPrivateMessage(args, context);
+            await sendPrivateMessage(args, targetContext);
             break;
         case "sendRequest":
-            await sendRequest(args, context);
+            await sendRequest(args, targetContext);
             break;
         case "sendTyping":
-            await sendTyping(context);
+            await sendTyping(targetContext);
             break;
         case "setCoins":
-            await setMetaValue(context, "coins", Number(args.amount || 0));
+            await setMetaValue(targetContext, "coins", Number(args.amount || 0));
             break;
         case "setCooldown":
-            await setMetaValue(context, cooldownKey(args.value), Date.now() + Number(args.duration || 0) * 1000);
+            await setMetaValue(targetContext, cooldownKey(args.value), Date.now() + Number(args.duration || 0) * 1000);
             break;
         case "setTag":
-            await updateTags(args, context, "set");
+            await updateTags(args, targetContext, "set");
             break;
         case "showModal":
-            await showModal(args, context);
+            await showModal(args, targetContext);
             break;
         case "startThread":
-            await startThread(args, context);
+            await startThread(args, targetContext);
             break;
         case "timeout":
         case "timeoutMember":
-            await timeoutMember(args, context);
+            await timeoutMember(args, targetContext);
             break;
         case "unlockThread":
-            await editThreadState(context, {
+            await editThreadState(targetContext, {
                 locked: false,
             });
             break;
         case "unpinMessage":
-            await unpinMessage(context);
+            await unpinMessage(targetContext);
             break;
         case "log":
-            context.logger.info(await resolveString(args.message || args.value || "", context));
+            targetContext.logger.info(await resolveString(args.message || args.value || "", targetContext));
             break;
         default:
             throw new Error(`Unsupported action "${action.id}".`);
@@ -592,7 +596,9 @@ async function evalJavaScript(args, context) {
 
 async function updateRole(args, context, mode) {
     const member = await resolveMember(args.member || args.user, context);
-    const roles = Array.isArray(args.value) ? args.value : [args.value];
+    const roles = args.value === undefined && context.role
+        ? [context.role.id]
+        : Array.isArray(args.value) ? args.value : [args.value];
 
     if (!member?.roles) {
         throw new Error(`${mode}Role action could not resolve a guild member.`);
@@ -619,6 +625,44 @@ async function timeoutMember(args, context) {
     }
 
     await member.timeout(seconds * 1000, args.reason || "YAML action timeout");
+}
+
+async function resolveTargetContext(target, context) {
+    if (!target) return context;
+
+    const resolvedTarget = await resolveValue(target, context);
+    const next = {
+        ...context,
+    };
+
+    if (resolvedTarget.guild) {
+        next.guild = await resolveGuild(resolvedTarget.guild, next);
+    }
+
+    if (resolvedTarget.channel) {
+        next.channel = await resolveChannel(resolvedTarget.channel, next);
+    }
+
+    if (resolvedTarget.user) {
+        next.user = await resolveUser(resolvedTarget.user, next);
+    }
+
+    if (resolvedTarget.member) {
+        next.member = await resolveMember(resolvedTarget.member, next);
+        next.user = next.member?.user || next.user;
+    }
+
+    if (resolvedTarget.role) {
+        next.role = resolveRole(resolvedTarget.role, next);
+    }
+
+    if (resolvedTarget.message) {
+        next.message = await resolveMessage(resolvedTarget.message, next);
+        next.channel = next.message?.channel || next.channel;
+        next.guild = next.message?.guild || next.guild;
+    }
+
+    return next;
 }
 
 async function updateMetaList(context, args, mode) {
@@ -750,6 +794,34 @@ async function resolveChannel(value, context) {
     return context.client.channels.fetch(id);
 }
 
+async function resolveGuild(value, context) {
+    const guild = String(value);
+
+    return context.client.guilds.cache.get(guild)
+        || context.client.guilds.cache.find((cachedGuild) => cachedGuild.name.toLowerCase() === guild.toLowerCase())
+        || context.client.guilds.fetch(guild);
+}
+
+async function resolveUser(value, context) {
+    const id = String(value).replace(/[<@!>]/g, "");
+
+    return context.client.users.cache.get(id)
+        || context.guild?.members.cache.find((member) => member.displayName.toLowerCase() === String(value).toLowerCase())?.user
+        || context.client.users.fetch(id);
+}
+
+async function resolveMessage(value, context) {
+    if (!context.channel?.messages) {
+        throw new Error("message target needs a channel context.");
+    }
+
+    const id = String(value);
+    const cached = context.channel.messages.cache.get(id)
+        || context.channel.messages.cache.find((message) => message.content === id);
+
+    return cached || context.channel.messages.fetch(id);
+}
+
 function list(value) {
     if (Array.isArray(value)) return value.map(String);
     if (value === undefined || value === null || value === "") return [];
@@ -766,6 +838,8 @@ async function resolveMember(value, context) {
 }
 
 function resolveRole(value, context) {
+    if (!value && context.role) return context.role;
+
     const roleValue = String(value).replace(/[<@&>]/g, "");
 
     return context.guild?.roles.cache.get(roleValue)
@@ -877,8 +951,14 @@ function validateActions(actions, messages = new Map()) {
             const validation = validateActions(action.actions, messages);
 
             if (!validation.valid) return validation;
+            const conditionValidation = validateNotMetActions(action.conditions, messages);
+
+            if (!conditionValidation.valid) return conditionValidation;
             continue;
         }
+
+        const notMetValidation = validateNotMetActions(action.conditions, messages);
+        if (!notMetValidation.valid) return notMetValidation;
 
         if (Array.isArray(action.args?.actions)) {
             const validation = validateActions(action.args.actions, messages);
@@ -902,6 +982,20 @@ function validateActions(actions, messages = new Map()) {
         const messageValidation = validateActionMessage(action, messages);
 
         if (!messageValidation.valid) return messageValidation;
+    }
+
+    return {
+        valid: true,
+    };
+}
+
+function validateNotMetActions(conditions, messages) {
+    for (const condition of conditions || []) {
+        if (Array.isArray(condition["not-met-actions"])) {
+            const validation = validateActions(condition["not-met-actions"], messages);
+
+            if (!validation.valid) return validation;
+        }
     }
 
     return {

@@ -40,7 +40,7 @@ actions:
 
 Los tipos de opciones soportados son `string`, `integer`, `number`, `boolean`, `user`, `channel`, `role` y `mentionable`. Las opciones de texto y número pueden usar `choices`, `min-length`, `max-length`, `min-value` y `max-value` cuando Discord lo permite.
 
-Los placeholders de opciones incluyen `%option_name%`, `%option_name_id%`, `%option_name_mention%`, `%option_name_is_provided%`, `%option_name_username%` y `%option_name_display_name%`.
+Los placeholders de opciones incluyen `%option_name%`, `%option_name_id%`, `%option_name_mention%`, `%option_name_is_provided%`, `%option_name_choice_name%`, `%option_name_username%` y `%option_name_display_name%`.
 
 ## Eventos
 
@@ -108,6 +108,58 @@ Variables extra por trigger:
 - `messageReactionAdd` / `messageReactionRemove`: `%reaction_emoji%`.
 - `messageUpdate`: `%message_old_content%`.
 - `presenceUpdate`: `%old_status%`, `%new_status%`.
+
+## Targets
+
+Cada acción puede definir `target` para cambiar el contexto donde se ejecuta. Los targets soportados son `member`, `channel`, `message`, `role`, `user` y `guild`.
+
+```yml
+actions:
+  - id: addRole
+    args:
+      value: "%option_role_id%"
+    target:
+      member: "%option_user_id%"
+  - id: sendMessage
+    args:
+      content: "Rol actualizado."
+    target:
+      channel: "logs"
+```
+
+El target se resuelve antes de evaluar las condiciones de la acción, así que las condiciones y placeholders de esa acción usan el nuevo contexto.
+
+## Metas
+
+Puedes declarar metadatos en `configs/metas`. Los archivos `.yml` o `.yaml` se cargan de forma recursiva y pueden contener una meta directa o una lista bajo `metas`.
+
+```yml
+metas:
+  - key: counting
+    type: number
+    mode: channel
+    default: 0
+  - key: experience
+    type: number
+    mode: user
+    default: 0
+    leaderboard:
+      enabled: true
+      name: experience
+      description: "Tabla de experiencia"
+      format: "**%value%** xp"
+```
+
+Tipos soportados: `number`, `string`, `boolean` y `list`.
+
+Modos soportados:
+
+- `global`: un valor compartido para todo el bot.
+- `user`: un valor por usuario dentro del servidor.
+- `channel`: un valor por canal dentro del servidor.
+- `message`: un valor por mensaje dentro del servidor.
+
+Si una meta no está declarada, el motor conserva el comportamiento antiguo: alcance por servidor y usuario, sin coerción de tipo. Los leaderboards se validan en metas `number` con modo `user`, pero el comando `/leaderboard` todavía no está implementado.
 
 ## Mensajes
 

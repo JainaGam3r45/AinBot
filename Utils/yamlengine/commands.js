@@ -178,6 +178,9 @@ function collectOptionVariables(interaction, options) {
         variables[`option_${option.name}_is_provided`] = value !== null && value !== undefined;
         variables[`option_${option.name}`] = formatOptionValue(value);
 
+        const choice = getSelectedChoice(option, value);
+        if (choice) variables[`option_${option.name}_choice_name`] = choice.name;
+
         if (value && typeof value === "object") {
             variables[`option_${option.name}_id`] = value.id || "";
             variables[`option_${option.name}_mention`] = getMention(value);
@@ -188,6 +191,12 @@ function collectOptionVariables(interaction, options) {
     }
 
     return variables;
+}
+
+function getSelectedChoice(option, value) {
+    if (!Array.isArray(option.choices)) return null;
+
+    return option.choices.find((choice) => String(choice.value) === String(value)) || null;
 }
 
 function getOptionValue(interaction, option) {
