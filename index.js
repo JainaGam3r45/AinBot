@@ -1,6 +1,7 @@
 require("dotenv").config({ quiet: true });
 const logger = require('./Utils/logger');
 const { installCrashGuard, shutdown } = require("./Utils/crashguard");
+const { createDatabase } = require("./database");
 
 const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
 const client = new Client({
@@ -58,11 +59,14 @@ main();
  */
 async function main() {
     try {
+        client.database = await createDatabase();
+        logger.info(`Database provider: ${client.database.config.provider}.`);
+
         await loadEvents(client);
         await client.login(process.env.BOT_TOKEN);
         logger.info("Discord login request completed.");
     } catch (error) {
         logger.critical("Failed to start the bot", error);
-        shutdown(client, 1);
+        await shutdown(client, 1);
     }
 }

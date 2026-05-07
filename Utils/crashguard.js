@@ -74,7 +74,7 @@ function handleWarning(warning) {
  */
 function handleCriticalException(client, error) {
     logger.critical("Uncaught exception", error);
-    shutdown(client, 1);
+    void shutdown(client, 1);
 }
 
 /**
@@ -83,7 +83,7 @@ function handleCriticalException(client, error) {
  */
 function handleInvalidatedSession(client) {
     logger.critical("Discord session invalidated, shutting down");
-    shutdown(client, 1);
+    void shutdown(client, 1);
 }
 
 /**
@@ -91,8 +91,19 @@ function handleInvalidatedSession(client) {
  * @param {Client} client Discord client to shut down.
  * @param {number} exitCode Process exit code.
  */
-function shutdown(client, exitCode) {
+async function shutdown(client, exitCode) {
+    if (client.shuttingDown) return;
+
+    client.shuttingDown = true;
     process.exitCode = exitCode;
+
+    try {
+        if (client.database) {
+            await client.database.close();
+        }
+    } catch (error) {
+        logger.issue("Failed to close database during shutdown", error);
+    }
 
     try {
         client.destroy();
