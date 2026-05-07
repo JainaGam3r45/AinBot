@@ -13,20 +13,20 @@ module.exports = {
             const command = client.commands.get(interaction.commandName);
             if (!command)
                 return interaction.reply({
-                    content: `Comando desactualizado o ya no está disponible.`,
+                    content: `Command outdated or no longer available.`,
                     flags: MessageFlags.Ephemeral,
                 });
 
             if (command.developer && !process.env.DEVELOPERS_IDS.includes(interaction.user.id))
                 return interaction.reply({
-                    content: `¡Ups! Has descubierto un comando de desarrollador.`,
+                    content: `Oops! You discovered a developer command.`,
                     flags: MessageFlags.Ephemeral,
                 });
 
             try {
                 await command.execute(interaction, client);
             } catch (error) {
-                logger.recovered(`El comando ${interaction.commandName} falló`, error);
+                logger.recovered(`Command ${interaction.commandName} failed`, error);
 
                 const message = {
                     content: "There was an error while running this command.",
@@ -47,7 +47,7 @@ module.exports = {
             try {
                 await button.execute(interaction, client, buttonId.slice(1));
             } catch (error) {
-                logger.recovered(`El botón ${buttonId[0]} falló`, error);
+                logger.recovered(`Button ${buttonId[0]} failed`, error);
             }
         } else {
             return;
