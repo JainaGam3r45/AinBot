@@ -1,0 +1,11 @@
+name: default-message-reply
+trigger: messageCreate
+conditions:
+  - id: "!isBot"
+  - id: matchesRegex
+    args:
+      value: "^ainbot hello$"
+actions:
+  - id: reply
+    args:
+      message: default-welcome

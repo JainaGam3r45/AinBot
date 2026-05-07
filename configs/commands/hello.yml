@@ -1,0 +1,29 @@
+name: hello
+description: "Send a configurable YAML Display Components message."
+contexts:
+  - guild
+options:
+  - name: target
+    description: "Choose a user to mention in the sample response."
+    type: user
+    required: false
+actions:
+  - id: reply
+    args:
+      ephemeral: true
+      components:
+        - type: container
+          color: "#27ae60"
+          components:
+            - type: text-display
+              content: "# YAML command ready"
+            - type: text-display
+              content: "Hello %user_mention%. Selected user: %option_target_mention%"
+            - type: separator
+              spacing: 1
+            - type: action-row
+              components:
+                - type: button
+                  label: "Open docs"
+                  style: link
+                  url: "https://github.com/JainaGam3r45/AinBot"

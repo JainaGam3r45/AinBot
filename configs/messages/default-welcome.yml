@@ -1,0 +1,23 @@
+id: default-welcome
+disable-mentions: true
+components:
+  - type: container
+    color: "#2f80ed"
+    components:
+      - type: text-display
+        content: "# Hello, %user_display_name%"
+      - type: text-display
+        content: "This message was built from `configs/messages/default-welcome.yml` using Display Components."
+      - type: separator
+        spacing: 1
+      - type: section
+        components:
+          - type: text-display
+            content: "Server: **%guild_name%**"
+          - type: text-display
+            content: "Channel: %channel_mention%"
+        accessory:
+          type: button
+          label: "Discord.js Guide"
+          style: link
+          url: "https://discordjs.guide/legacy/popular-topics/display-components"
