@@ -1,6 +1,7 @@
 const { inspect } = require("util");
 
 const reset = "\x1b[0m";
+const dim = "\x1b[2m";
 
 const levels = {
     debug: {
@@ -42,6 +43,18 @@ class Logger {
         this.write("error", values);
     }
 
+    issue(context, error) {
+        this.error(`${context}:`, error);
+    }
+
+    recovered(context, error) {
+        this.warn(`${context}. Recovered without shutting down.`, error);
+    }
+
+    critical(context, error) {
+        this.error(`${context}. Critical shutdown required.`, error);
+    }
+
     log(level, ...values) {
         if (!levels[level]) {
             this.info(level, ...values);
@@ -54,15 +67,16 @@ class Logger {
     write(level, values) {
         const entry = levels[level];
         const message = values.length ? values.map(formatValue).join(" ") : "";
-        const timestamp = formatTime(new Date());
+        const timestamp = `${dim}[${formatTime(new Date())}]${reset}`;
+        const label = `${entry.color}[${entry.label}]:${reset}`;
 
-        entry.stream.write(`${entry.color}[${timestamp}] [${entry.label}]:${reset} ${message}\n`);
+        entry.stream.write(`${timestamp} ${label} ${message}\n`);
     }
 }
 
 function formatValue(value) {
     if (value instanceof Error) {
-        return value.stack || value.message;
+        return formatError(value);
     }
 
     if (typeof value === "string") {
@@ -73,6 +87,22 @@ function formatValue(value) {
         colors: true,
         depth: 4,
     });
+}
+
+function formatError(error) {
+    const details = [
+        error.stack || error.message,
+    ];
+
+    if (error.code) {
+        details.push(`code: ${error.code}`);
+    }
+
+    if (error.cause) {
+        details.push(`cause: ${formatValue(error.cause)}`);
+    }
+
+    return details.join("\n");
 }
 
 function formatTime(date) {
