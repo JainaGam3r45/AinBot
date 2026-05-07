@@ -1,0 +1,61 @@
+name: modalprofiledata
+description: "Show the profile data stored by the modal example."
+contexts:
+  - guild
+actions:
+  - id: reply
+    conditions:
+      - id: textLengthBelow
+        args:
+          text: "%meta_profile_hobbies%"
+          amount: 1
+    args:
+      ephemeral: true
+      components:
+        - type: container
+          color: "#ed4245"
+          components:
+            - type: text-display
+              content: "## No profile data found"
+            - type: text-display
+              content: "Run `/modalprofile` first and submit the modal to store your example data."
+  - id: reply
+    conditions:
+      - id: textLengthAbove
+        args:
+          text: "%meta_profile_hobbies%"
+          amount: 0
+      - id: textLengthAbove
+        args:
+          text: "%meta_profile_picture_url%"
+          amount: 0
+    args:
+      ephemeral: true
+      components:
+        - type: container
+          color: "#5865f2"
+          components:
+            - type: text-display
+              content: "## Stored profile data"
+            - type: text-display
+              content: "**Hobbies:** %meta_profile_hobbies%\n**Starter:** %meta_profile_starter%\n**Picture name:** %meta_profile_picture_name%\n**Picture size:** %meta_profile_picture_size% bytes\n**Picture URL:** %meta_profile_picture_url%"
+  - id: reply
+    conditions:
+      - id: textLengthAbove
+        args:
+          text: "%meta_profile_hobbies%"
+          amount: 0
+      - id: textLengthBelow
+        args:
+          text: "%meta_profile_picture_url%"
+          amount: 1
+    args:
+      ephemeral: true
+      components:
+        - type: container
+          color: "#5865f2"
+          components:
+            - type: text-display
+              content: "## Stored profile data"
+            - type: text-display
+              content: "**Hobbies:** %meta_profile_hobbies%\n**Starter:** %meta_profile_starter%\n**Picture:** No file uploaded."

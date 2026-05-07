@@ -239,7 +239,7 @@ Las acciones `addInviteBonus`, `removeInviteBonus`, `setInviteBonus` y `sendPres
 
 Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`, se guardan en memoria y se pierden al reiniciar el proceso.
 
-`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/commands/modalprofile.yml`, con guardado de datos en `configs/events/modalprofile.yml` y metas declaradas en `configs/metas/modalprofile.yml`.
+`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/commands/modalprofile.yml`, con guardado de datos en `configs/events/modalprofile.yml`, metas declaradas en `configs/metas/modalprofile.yml` y lectura de esos valores en `configs/commands/modalprofiledata.yml`.
 
 ## Condiciones
 
