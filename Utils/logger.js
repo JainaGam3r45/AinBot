@@ -200,7 +200,7 @@ function formatIncident({ context, error, severity, timestamp }) {
 
     return [
         "=".repeat(80),
-        `🕐 TIMESTAMP: ${timestamp.toLocaleString("en-US")}`,
+        `🕐 TIMESTAMP: ${formatIncidentTimestamp(timestamp)}`,
         `🚨 SEVERITY: ${severity}`,
         `📍 CONTEXT: ${context}`,
         `💬 MESSAGE: ${error.message}`,
@@ -253,6 +253,23 @@ function getLogFilePath(date) {
     const day = String(date.getDate()).padStart(2, "0");
 
     return path.join(logsDirectory, `anticrash-${year}-${month}-${day}.log`);
+}
+
+/**
+ * Formats an incident timestamp with padded date and time parts.
+ * @param {Date} date Date to format.
+ */
+function formatIncidentTimestamp(date) {
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const displayHours = String((hours % 12) || 12).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    const meridiem = hours >= 12 ? "PM" : "AM";
+
+    return `${month}/${day}/${year}, ${displayHours}:${minutes}:${seconds} ${meridiem}`;
 }
 
 /**
