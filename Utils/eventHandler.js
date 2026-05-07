@@ -1,6 +1,6 @@
 const { Client } = require("discord.js");
-const { loadMessageTemplates } = require("../yamlengine/messages");
-const { loadYamlEvents } = require("../yamlengine/events");
+const { loadMessageTemplates } = require("./yamlengine/messages");
+const { loadYamlEvents } = require("./yamlengine/events");
 
 /**
  * Loads event files and registers their listeners on the Discord client.
@@ -26,24 +26,27 @@ async function loadEvents (client) {
 
     for (const file of files) {
         try {
-            const event = require(file);
-            const groupKey = `${event.rest ? "rest" : "client"}:${event.name}`;
-            const group = eventGroups.get(groupKey) ?? {
-                name: event.name,
-                rest: Boolean(event.rest),
-                handlers: [],
-            };
+            const loadedEvents = normalizeEvents(require(file));
 
-            group.handlers.push({
-                file,
-                once: Boolean(event.once),
-                execute: event.execute,
-                ran: false,
-            });
+            for (const event of loadedEvents) {
+                const groupKey = `${event.rest ? "rest" : "client"}:${event.name}`;
+                const group = eventGroups.get(groupKey) ?? {
+                    name: event.name,
+                    rest: Boolean(event.rest),
+                    handlers: [],
+                };
 
-            eventGroups.set(groupKey, group);
+                group.handlers.push({
+                    file,
+                    once: Boolean(event.once),
+                    execute: event.execute,
+                    ran: false,
+                });
 
-            logger.debug(`Loaded event ${event.name} from ${file}`);
+                eventGroups.set(groupKey, group);
+
+                logger.debug(`Loaded event ${event.name} from ${file}`);
+            }
         } catch (error) {
             logger.issue(`Failed to load event from ${file}`, error);
         }
@@ -117,6 +120,10 @@ function registerEventGroup(client, group, logger) {
     }
 
     logger.debug(`Registered ${group.handlers.length} handler(s) for ${group.name}.`);
+}
+
+function normalizeEvents(value) {
+    return Array.isArray(value) ? value : [value];
 }
 
 module.exports = { loadEvents };

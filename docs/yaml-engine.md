@@ -1,12 +1,14 @@
 # YAML command and event engine
 
-This bot can load commands, events, and reusable Display Component messages from YAML files. JavaScript commands and events still work; YAML configs are loaded beside them.
+This bot loads commands, events, and reusable Display Component messages from YAML files. JavaScript now stays in the core runtime under `Utils` and `Events/core.js`; server behavior should be added through YAML.
 
 ## Folders
 
 - `configs/commands`: slash commands.
 - `configs/events`: event scripts.
 - `configs/messages`: reusable Display Component message templates.
+- `Utils/yamlengine`: the runtime that parses YAML, renders Display Components, evaluates conditions, and runs actions.
+- `Events/core.js`: the small Discord bridge that loads YAML commands and routes interactions.
 
 Files ending in `.yml` or `.yaml` are loaded recursively. Prefix a file or folder with `_` to disable it without deleting it.
 
@@ -88,10 +90,12 @@ Supported actions:
 - `reply`: replies to the current interaction or message.
 - `sendMessage`: sends to `args.channel` or the current channel.
 - `editReply`: edits the current interaction reply.
+- `sendTyping`: sends a typing indicator in the current channel.
 - `addReaction`: reacts to the current message.
 - `deleteMessage`: deletes the current message when possible.
 - `addRole` and `removeRole`: update the current or configured member.
 - `timeout`: times out the current or configured member. `duration` is in seconds.
+- `evalJavaScript`: evaluates a JavaScript expression for trusted developer commands and renders the result through Display Components.
 - `setMeta`, `addMeta`, and `deleteMeta`: store scoped metadata for the current guild and user.
 - `log`: writes a message through the central logger.
 
@@ -123,6 +127,8 @@ conditions:
 
 ## Placeholders
 
-Common placeholders include `%bot_username%`, `%guild_name%`, `%channel_mention%`, `%user_mention%`, `%user_display_name%`, `%message_content%`, `%date%`, `%hour%`, `%minute%`, and `%meta_key%`.
+Common placeholders include `%bot_username%`, `%guild_name%`, `%channel_mention%`, `%user_mention%`, `%user_display_name%`, `%message_content%`, `%interaction_latency%`, `%api_latency%`, `%date%`, `%hour%`, `%minute%`, and `%meta_key%`.
 
 Placeholders are available in strings across commands, events, actions, and message components. To choose random text, use `random: ["First value", "Second value"]` where a normal string value would go.
+
+The default `ping.yml` and `eval.yml` files show how old JavaScript commands can be expressed as YAML commands. `ping.yml` uses placeholders and normal Display Components. `eval.yml` keeps the dangerous work inside the built-in `evalJavaScript` action, while the command name, option, permissions, and success/error layouts live in YAML.

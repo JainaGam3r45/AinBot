@@ -1,0 +1,22 @@
+name: ping
+description: "Show the current bot and API latency."
+contexts:
+  - guild
+actions:
+  - id: sendTyping
+  - id: reply
+    args:
+      components:
+        - type: container
+          color: "#f1c40f"
+          components:
+            - type: text-display
+              content: "# Pong"
+            - type: text-display
+              content: "**Bot latency**\n%interaction_latency%ms"
+            - type: text-display
+              content: "**API latency**\n%api_latency%ms"
+            - type: separator
+              spacing: 1
+            - type: text-display
+              content: "Requested by %user_mention%"

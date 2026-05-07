@@ -63,6 +63,7 @@ async function getPlaceholder(name, context) {
     const user = context.user;
     const member = context.member;
     const message = context.message;
+    const interaction = context.interaction;
     const client = context.client;
 
     const placeholders = {
@@ -92,6 +93,9 @@ async function getPlaceholder(name, context) {
         message_content: message?.content || "",
         message_author_id: message?.author?.id || "",
         message_url: message?.url || "",
+        interaction_id: interaction?.id || "",
+        interaction_latency: interaction?.createdTimestamp ? Date.now() - interaction.createdTimestamp : "",
+        api_latency: client.ws?.ping === undefined ? "" : Math.round(client.ws.ping),
         date: new Date().toISOString().slice(0, 10),
         hour: new Date().getHours(),
         minute: new Date().getMinutes(),

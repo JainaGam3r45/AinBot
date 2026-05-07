@@ -228,6 +228,8 @@ function buildSection(config, context) {
         } else {
             throw new Error("A section accessory must be a button or thumbnail.");
         }
+    } else {
+        throw new Error("A section needs a button or thumbnail accessory.");
     }
 
     return builder;
@@ -386,6 +388,13 @@ function validateComponentConfig(component) {
                 return {
                     valid: false,
                     reason: "section needs at least one text-display component",
+                };
+            }
+
+            if (!component.accessory) {
+                return {
+                    valid: false,
+                    reason: "section needs a button or thumbnail accessory",
                 };
             }
 

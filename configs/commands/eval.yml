@@ -1,0 +1,45 @@
+name: eval
+description: "Evaluate JavaScript for trusted developers."
+developer: true
+contexts:
+  - guild
+permissions:
+  - Administrator
+options:
+  - name: code
+    description: "JavaScript expression to evaluate."
+    type: string
+    required: true
+    min-length: 1
+    max-length: 4096
+actions:
+  - id: evalJavaScript
+    args:
+      code: "%option_code%"
+      timeout: 3000
+      success:
+        components:
+          - type: container
+            color: "#5865f2"
+            components:
+              - type: text-display
+                content: "# JavaScript evaluation"
+              - type: text-display
+                content: "**Type:** `%eval_type%`\n**Time:** `%eval_time%`\n**Size:** `%eval_size%`"
+              - type: separator
+                spacing: 1
+              - type: text-display
+                content: "**Code**\n```js\n%eval_code%\n```"
+              - type: text-display
+                content: "**Result**\n```js\n%eval_result%\n```"
+      error:
+        components:
+          - type: container
+            color: "#ed4245"
+            components:
+              - type: text-display
+                content: "# JavaScript evaluation failed"
+              - type: text-display
+                content: "**Code**\n```js\n%eval_code%\n```"
+              - type: text-display
+                content: "**%eval_error_type%**\n```js\n%eval_error%\n```"

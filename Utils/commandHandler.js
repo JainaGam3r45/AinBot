@@ -1,14 +1,12 @@
 const { Client } = require("discord.js");
-const { loadYamlCommands } = require("../yamlengine/commands");
-const { loadMessageTemplates } = require("../yamlengine/messages");
+const { loadYamlCommands } = require("./yamlengine/commands");
+const { loadMessageTemplates } = require("./yamlengine/messages");
 
 /**
  * Loads slash command files and publishes them to Discord.
  * @param {Client} client Discord client with a commands collection.
  */
 async function loadCommands(client) {
-    const { loadFiles } = require("../Functions/fileLoader");
-    const path = require('path');
     const logger = require("./logger");
 
     await client.application.commands.cache.clear();
@@ -16,22 +14,7 @@ async function loadCommands(client) {
 
     const commands = [];
 
-    const files = await loadFiles("Commands");
     client.yamlMessages = await loadMessageTemplates(logger);
-
-    for (const file of files) {
-        try {
-            const command = require(file);
-            const fileName = path.basename(file);
-
-            client.commands.set(command.data.name, command);
-            commands.push(command.data.toJSON());
-
-            logger.debug(`Loaded command ${command.data.name} from ${fileName}`);
-        } catch (error) {
-            logger.issue(`Failed to load command from ${file}`, error);
-        }
-    }
 
     const yamlCommands = await loadYamlCommands(client, client.yamlMessages, logger);
 

@@ -1,19 +1,22 @@
 const { MessageFlags } = require("discord.js");
+const { inspect } = require("util");
 const { buildMessagePayload, validateMessageConfig } = require("./messages");
 const { validateConditions } = require("./conditions");
 const { addMetaValue, deleteMetaValue, setMetaValue } = require("./meta");
 const { resolveString, resolveValue } = require("./placeholders");
-const { safeEditReply, safeReply } = require("../Utils/safereply");
+const { safeDeferReply, safeEditReply, safeReply } = require("../safereply");
 
 const actionIds = new Set([
     "reply",
     "sendMessage",
     "editReply",
+    "sendTyping",
     "addReaction",
     "deleteMessage",
     "addRole",
     "removeRole",
     "timeout",
+    "evalJavaScript",
     "setMeta",
     "addMeta",
     "deleteMeta",
@@ -46,7 +49,9 @@ async function runAction(action, context) {
 
     if (!await context.evaluateConditions(action.conditions, context)) return;
 
-    const args = await resolveValue(action.args || {}, context);
+    const args = action.id === "evalJavaScript"
+        ? action.args || {}
+        : await resolveValue(action.args || {}, context);
 
     switch (action.id) {
         case "reply":
@@ -57,6 +62,9 @@ async function runAction(action, context) {
             break;
         case "editReply":
             await editReply(args, context);
+            break;
+        case "sendTyping":
+            await sendTyping(context);
             break;
         case "addReaction":
             await addReaction(args, context);
@@ -72,6 +80,9 @@ async function runAction(action, context) {
             break;
         case "timeout":
             await timeoutMember(args, context);
+            break;
+        case "evalJavaScript":
+            await evalJavaScript(args, context);
             break;
         case "setMeta":
             await setMetaValue(context, args.key, args.value);
@@ -128,6 +139,12 @@ async function editReply(args, context) {
     await safeEditReply(context.interaction, payload);
 }
 
+async function sendTyping(context) {
+    if (!context.channel?.sendTyping) return;
+
+    await context.channel.sendTyping();
+}
+
 async function addReaction(args, context) {
     const message = context.message || await fetchInteractionReply(context);
     const values = Array.isArray(args.value) ? args.value : [args.value];
@@ -141,6 +158,59 @@ async function deleteMessage(context) {
     if (!context.message?.deletable) return;
 
     await context.message.delete();
+}
+
+async function evalJavaScript(args, context) {
+    if (!context.interaction) {
+        throw new Error("evalJavaScript action needs an interaction context.");
+    }
+
+    const deferred = await safeDeferReply(context.interaction, {
+        flags: MessageFlags.Ephemeral,
+    });
+
+    if (!deferred && !context.interaction.deferred && !context.interaction.replied) return;
+
+    const code = await resolveString(args.code || "", context);
+    const restricted = ["global", "process", "require", "child_process", "fs", "eval", "Bun"];
+
+    context.variables.eval_code = truncate(code, 1000);
+
+    if (new RegExp(restricted.join("|")).test(code)) {
+        context.variables.eval_error_type = "RestrictedCode";
+        context.variables.eval_error = "The code includes restricted functions or properties.";
+
+        await safeEditReply(context.interaction, await buildMessagePayload(args.error || defaultEvalErrorMessage(), context));
+        return;
+    }
+
+    try {
+        const startedAt = process.hrtime();
+        let evaluated = await evalWithTimeout(code, Number(args.timeout || 3000));
+        const evaluatedType = getEvalType(evaluated);
+
+        if (typeof evaluated !== "string") {
+            evaluated = inspect(evaluated, {
+                depth: 2,
+            });
+        }
+
+        const elapsed = process.hrtime(startedAt);
+        const executionTime = (elapsed[0] * 1000 + elapsed[1] / 1e6).toFixed(3);
+        const resultSize = Buffer.byteLength(evaluated, "utf8");
+
+        context.variables.eval_type = evaluatedType;
+        context.variables.eval_result = truncate(evaluated, 1000);
+        context.variables.eval_size = resultSize > 1024 ? `${(resultSize / 1024).toFixed(2)} KB` : `${resultSize} bytes`;
+        context.variables.eval_time = `${executionTime}ms`;
+
+        await safeEditReply(context.interaction, await buildMessagePayload(args.success || defaultEvalSuccessMessage(), context));
+    } catch (error) {
+        context.variables.eval_error_type = error instanceof SyntaxError ? "SyntaxError" : error.constructor.name;
+        context.variables.eval_error = truncate(String(error), 1000);
+
+        await safeEditReply(context.interaction, await buildMessagePayload(args.error || defaultEvalErrorMessage(), context));
+    }
 }
 
 async function updateRole(args, context, mode) {
@@ -199,6 +269,81 @@ function resolveRole(value, context) {
 
     return context.guild?.roles.cache.get(roleValue)
         || context.guild?.roles.cache.find((role) => role.name.toLowerCase() === String(value).toLowerCase());
+}
+
+function evalWithTimeout(code, timeout) {
+    return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => reject(new Error("Execution timed out.")), timeout);
+
+        Promise.resolve(eval(`(async () => { return ${code} })()`))
+            .then((value) => {
+                clearTimeout(timeoutId);
+                resolve(value);
+            })
+            .catch((error) => {
+                clearTimeout(timeoutId);
+                reject(error);
+            });
+    });
+}
+
+function getEvalType(value) {
+    if (Array.isArray(value)) return "array";
+    if (value === null) return "null";
+
+    return typeof value;
+}
+
+function defaultEvalSuccessMessage() {
+    return {
+        components: [
+            {
+                type: "container",
+                color: "#5865f2",
+                components: [
+                    {
+                        type: "text-display",
+                        content: "## JavaScript evaluation",
+                    },
+                    {
+                        type: "text-display",
+                        content: "**Type:** `%eval_type%`\n**Time:** `%eval_time%`\n**Size:** `%eval_size%`",
+                    },
+                    {
+                        type: "text-display",
+                        content: "```js\n%eval_result%\n```",
+                    },
+                ],
+            },
+        ],
+    };
+}
+
+function defaultEvalErrorMessage() {
+    return {
+        components: [
+            {
+                type: "container",
+                color: "#ed4245",
+                components: [
+                    {
+                        type: "text-display",
+                        content: "## JavaScript evaluation failed",
+                    },
+                    {
+                        type: "text-display",
+                        content: "**%eval_error_type%**\n```js\n%eval_error%\n```",
+                    },
+                ],
+            },
+        ],
+    };
+}
+
+function truncate(text, maxLength) {
+    const value = String(text);
+
+    return value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
 }
 
 async function fetchInteractionReply(context) {
