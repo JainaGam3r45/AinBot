@@ -1,3 +1,9 @@
+const { Client } = require("discord.js");
+
+/**
+ * Loads event files and registers their listeners on the Discord client.
+ * @param {Client} client Discord client with events and eventDispatchers collections.
+ */
 async function loadEvents (client) {
     const { loadFiles } = require('../Functions/fileLoader');
     const logger = require("./logger");
@@ -46,6 +52,10 @@ async function loadEvents (client) {
     logger.info("Events loading completed.");
 }
 
+/**
+ * Registers the listener that runs every handler for one Discord event.
+ * @param {Client} client Discord client receiving the listener.
+ */
 function registerEventGroup(client, group, logger) {
     const target = group.rest ? client.rest : client;
     const shouldRunOnce = group.handlers.every((handler) => handler.once);

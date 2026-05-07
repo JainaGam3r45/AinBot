@@ -1,6 +1,10 @@
 const { readdir } = require("fs/promises");
 const path = require("path");
 
+/**
+ * Loads JavaScript files from a project folder and refreshes their require cache.
+ * @param {string} dirName Folder name relative to the project root.
+ */
 async function loadFiles(dirName) {
     const directory = path.join(process.cwd(), dirName);
     const files = await findJavaScriptFiles(directory);

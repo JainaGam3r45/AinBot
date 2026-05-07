@@ -27,34 +27,42 @@ const levels = {
 };
 
 class Logger {
+    /** Writes a debug message. */
     debug(...values) {
         this.write("debug", values);
     }
 
+    /** Writes an info message. */
     info(...values) {
         this.write("info", values);
     }
 
+    /** Writes a warning message. */
     warn(...values) {
         this.write("warn", values);
     }
 
+    /** Writes an error message. */
     error(...values) {
         this.write("error", values);
     }
 
+    /** Logs an operational issue that should be investigated. */
     issue(context, error) {
         this.error(`${context}:`, error);
     }
 
+    /** Logs a recovered error without stopping the bot. */
     recovered(context, error) {
         this.warn(`${context}. Recovered without shutting down.`, error);
     }
 
+    /** Logs a critical error before shutdown. */
     critical(context, error) {
         this.error(`${context}. Critical shutdown required.`, error);
     }
 
+    /** Writes a message with a dynamic log level. */
     log(level, ...values) {
         if (!levels[level]) {
             this.info(level, ...values);
@@ -64,6 +72,7 @@ class Logger {
         this.write(level, values);
     }
 
+    /** Formats and writes a log entry. */
     write(level, values) {
         const entry = levels[level];
         const message = values.length ? values.map(formatValue).join(" ") : "";

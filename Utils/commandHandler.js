@@ -1,3 +1,9 @@
+const { Client } = require("discord.js");
+
+/**
+ * Loads slash command files and publishes them to Discord.
+ * @param {Client} client Discord client with a commands collection.
+ */
 async function loadCommands(client) {
     const { loadFiles } = require("../Functions/fileLoader");
     const path = require('path');

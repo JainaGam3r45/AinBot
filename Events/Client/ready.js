@@ -6,8 +6,8 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     /**
-     * 
-     * @param {Client} client 
+     * Loads commands and sets the bot presence when Discord is ready.
+     * @param {Client} client Ready Discord client.
      */
     async execute(client) {
 

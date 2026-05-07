@@ -6,8 +6,8 @@ module.exports = {
     .setDescription('¡Obtener el ping actual del bot!')
     .setContexts(InteractionContextType.Guild),
     /**
-     *
-     * @param {ChatInputCommandInteraction} interaction
+     * Replies with the bot and API latency.
+     * @param {ChatInputCommandInteraction} interaction Slash command interaction.
      */
     async execute(interaction) {
 

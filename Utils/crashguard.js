@@ -1,7 +1,11 @@
 const { inspect } = require("util");
-const { Events } = require("discord.js");
+const { Client, Events } = require("discord.js");
 const logger = require("./logger");
 
+/**
+ * Installs process and Discord client crash handlers once.
+ * @param {Client} client Discord client to protect.
+ */
 function installCrashGuard(client) {
     if (client.crashGuard) return;
 
@@ -62,6 +66,11 @@ function handleInvalidatedSession(client) {
     shutdown(client, 1);
 }
 
+/**
+ * Destroys the Discord client and exits the process with the given code.
+ * @param {Client} client Discord client to shut down.
+ * @param {number} exitCode Process exit code.
+ */
 function shutdown(client, exitCode) {
     process.exitCode = exitCode;
 

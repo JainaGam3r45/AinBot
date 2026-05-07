@@ -4,8 +4,8 @@ const logger = require("../../Utils/logger");
 module.exports = {
     name: Events.InteractionCreate,
     /**
-     *
-     * @param {ChatInputCommandInteraction} interaction
+     * Routes command and button interactions to their handlers.
+     * @param {ChatInputCommandInteraction} interaction Incoming interaction.
      */
     async execute(interaction, client) {
         if (interaction.isChatInputCommand()) {

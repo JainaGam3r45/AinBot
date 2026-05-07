@@ -15,7 +15,8 @@ module.exports = {
         .setMaxLength(4096)
     ),
     /**
-     * @param {ChatInputCommandInteraction} interaction
+     * Evaluates JavaScript for trusted developers.
+     * @param {ChatInputCommandInteraction} interaction Slash command interaction.
      */
     async execute(interaction) {
 
@@ -101,7 +102,11 @@ module.exports = {
     },
 };
 
-// Achicar textos largos
+/**
+ * Shortens text for Discord embed fields.
+ * @param {string} text Text to shorten.
+ * @param {number} maxLength Maximum length before adding an ellipsis.
+ */
 function truncate(text, maxLength) {
     return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 }
