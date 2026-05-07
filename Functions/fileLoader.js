@@ -1,12 +1,35 @@
-const { glob } = require('glob');
-const { promisify } = require('util');
-const proGlob = promisify(glob);
+const { readdir } = require("fs/promises");
+const path = require("path");
 
 async function loadFiles(dirName) {
-    const Files = await proGlob(`${process.cwd().replace(/\\/g, "/")}/${dirName}/**/*.js`);
-    Files.forEach((file) => delete require(require.resolve(file)));
-    return Files;
+    const directory = path.join(process.cwd(), dirName);
+    const files = await findJavaScriptFiles(directory);
+
+    for (const file of files) {
+        delete require.cache[require.resolve(file)];
+    }
+
+    return files;
 }
+
+async function findJavaScriptFiles(directory) {
+    const entries = await readdir(directory, {
+        withFileTypes: true,
+    });
+
+    const files = await Promise.all(entries.map(async (entry) => {
+        const target = path.join(directory, entry.name);
+
+        if (entry.isDirectory()) {
+            return findJavaScriptFiles(target);
+        }
+
+        return entry.isFile() && entry.name.endsWith(".js") ? [target] : [];
+    }));
+
+    return files.flat().sort((left, right) => left.localeCompare(right));
+}
+
 module.exports = {
     loadFiles
 };
