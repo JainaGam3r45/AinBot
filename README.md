@@ -34,9 +34,15 @@ DEVELOPER_IDS= [
 ]
 ```
 
-4. Ejecuta el bot:
+4. Ejecuta el bot en modo normal/producción:
 ```bash
 npm start
+```
+
+Para iniciar el bot en modo desarrollo y mostrar mensajes de debug:
+
+```bash
+npm run dev
 ```
 
 ## Base de datos
