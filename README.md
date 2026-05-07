@@ -21,7 +21,13 @@ cd AinBot
 
 2. Instala las dependencias:
 ```bash
-bun install
+bun run install:dev
+```
+
+Para instalar solo dependencias de producción:
+
+```bash
+bun run install:prod
 ```
 
 3. Crea un archivo `.env` en el directorio raíz del proyecto y configura tus variables de entorno:

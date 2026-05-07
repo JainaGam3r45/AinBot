@@ -5,6 +5,8 @@
   "main": "index.js",
   "packageManager": "bun@1.3.11",
   "scripts": {
+    "install:dev": "bun install",
+    "install:prod": "bun install --production",
     "start": "AINBOT_MODE=production NODE_ENV=production bun index.js",
     "dev": "AINBOT_MODE=development NODE_ENV=development bun index.js",
     "start:dev": "AINBOT_MODE=development NODE_ENV=development bun index.js",
