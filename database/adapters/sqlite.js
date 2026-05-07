@@ -11,16 +11,16 @@ class SqliteDatabaseAdapter extends SqlRecordAdapter {
     }
 
     async connect() {
-        const Database = requireDriver("sqlite", ["better-sqlite3"]);
+        const Database = loadSqliteDriver();
 
         await mkdir(path.dirname(this.config.sqlitePath), {
             recursive: true,
         });
 
         this.db = new Database(this.config.sqlitePath);
-        this.db.pragma("journal_mode = WAL");
-        this.db.pragma("foreign_keys = ON");
-        this.db.pragma("busy_timeout = 5000");
+        this.db.exec("PRAGMA journal_mode = WAL;");
+        this.db.exec("PRAGMA foreign_keys = ON;");
+        this.db.exec("PRAGMA busy_timeout = 5000;");
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS ${this.table()} (
                 namespace TEXT NOT NULL,
@@ -93,6 +93,14 @@ class SqliteDatabaseAdapter extends SqlRecordAdapter {
             updatedAt: new Date(record.updatedAt),
         }));
     }
+}
+
+function loadSqliteDriver() {
+    if (process.versions.bun) {
+        return require("bun:sqlite").Database;
+    }
+
+    return requireDriver("sqlite", ["better-sqlite3"]);
 }
 
 module.exports = {

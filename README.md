@@ -19,18 +19,7 @@ git clone https://github.com/JainaGam3r45/AinBot.git
 cd AinBot
 ```
 
-2. Instala las dependencias:
-```bash
-bun run install:dev
-```
-
-Para instalar solo dependencias de producción:
-
-```bash
-bun run install:prod
-```
-
-3. Crea un archivo `.env` en el directorio raíz del proyecto y configura tus variables de entorno:
+2. Crea un archivo `.env` en el directorio raíz del proyecto y configura tus variables de entorno:
 ```makefile
 BOT_TOKEN="<your-token-bot>"
 PREFIX="<your-prefix-bot>"
@@ -38,6 +27,17 @@ DEVELOPER_IDS= [
     "<your-developer-id>",
     // Agrega más IDs de desarrolladores aquí
 ]
+```
+
+3. Instala las dependencias:
+```bash
+bun run install:dev
+```
+
+El instalador lee `DATABASE_PROVIDER` e instala automáticamente el driver correspondiente. Para instalar solo dependencias de producción:
+
+```bash
+bun run install:prod
 ```
 
 4. Ejecuta el bot en modo normal/producción:
@@ -75,15 +75,13 @@ El proveedor se elige con `DATABASE_PROVIDER`:
 - `mysql` / `mariadb`: buenas opciones si ya tienes esa infraestructura.
 - `mongodb`: útil cuando tus datos son documentos flexibles y cambian mucho de forma.
 
-Los drivers son opcionales para no instalar dependencias que quizá no uses. Instala solo el que necesites:
+Los drivers son opcionales y el instalador elige el correcto desde `DATABASE_PROVIDER`:
 
-```bash
-bun add better-sqlite3
-bun add pg
-bun add mysql2
-bun add mariadb
-bun add mongodb
-```
+- `sqlite`: usa `bun:sqlite`, incluido en Bun.
+- `postgresql`: instala `pg`.
+- `mysql`: instala `mysql2`.
+- `mariadb`: instala `mariadb`.
+- `mongodb`: instala `mongodb`.
 
 Ejemplo con SQLite:
 
