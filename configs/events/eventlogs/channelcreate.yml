@@ -1,0 +1,24 @@
+name: eventlogs-channel-create
+trigger: channelCreate
+conditions:
+  - id: textLengthAbove
+    args:
+      text: "%meta_event_log_channel%"
+      amount: 0
+actions:
+  - id: sendMessage
+    target:
+      channel: "%meta_event_log_channel%"
+    args:
+      components:
+        - type: container
+          color: "#00c7d4"
+          components:
+            - type: text-display
+              content: "## Channel Created"
+            - type: text-display
+              content: "**Channel:** %channel_mention%\n**Name:** `%channel_name%`\n**Type:** `%channel_type%`\n**ID:** `%channel_id%`"
+            - type: separator
+              spacing: 1
+            - type: text-display
+              content: "Channel Created - %date% at %hour%:%minute%"

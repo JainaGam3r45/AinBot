@@ -105,6 +105,8 @@ function getScopedKey(context, key) {
     switch (definition.mode) {
         case "global":
             return `global:${key}`;
+        case "guild":
+            return `${guildId}:guild:${key}`;
         case "channel":
             return `${guildId}:channel:${context.channel?.id || "system"}:${key}`;
         case "message":
@@ -146,7 +148,7 @@ function normalizeMetaType(value = "string") {
 function normalizeMetaMode(value = "user") {
     const mode = String(value).toLowerCase();
 
-    if (!["global", "user", "channel", "message"].includes(mode)) {
+    if (!["global", "guild", "user", "channel", "message"].includes(mode)) {
         throw new Error(`Unsupported meta mode "${value}".`);
     }
 

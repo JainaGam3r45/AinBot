@@ -155,11 +155,35 @@ Tipos soportados: `number`, `string`, `boolean` y `list`.
 Modos soportados:
 
 - `global`: un valor compartido para todo el bot.
+- `guild`: un valor por servidor.
 - `user`: un valor por usuario dentro del servidor.
 - `channel`: un valor por canal dentro del servidor.
 - `message`: un valor por mensaje dentro del servidor.
 
 Si una meta no está declarada, el motor conserva el comportamiento antiguo: alcance por servidor y usuario, sin coerción de tipo. Los leaderboards se validan en metas `number` con modo `user`, pero el comando `/leaderboard` todavía no está implementado.
+
+## Ejemplo de logs de eventos
+
+El proyecto incluye un ejemplo activo de logs de eventos en `configs/events/eventlogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/metas/eventlogs.yml`.
+
+Para activar los logs en un servidor, usa el comando de desarrollador:
+
+```text
+/eventlogs channel:#logs
+```
+
+El comando guarda el canal elegido en `event_log_channel`. Mientras esa meta esté vacía, los eventos no envían mensajes.
+
+Los ejemplos incluidos registran:
+
+- mensajes eliminados;
+- mensajes editados;
+- canales creados;
+- canales eliminados;
+- miembros que entran;
+- miembros que salen.
+
+Cada evento usa `target.channel: "%meta_event_log_channel%"`, una condición `textLengthAbove` para evitar envíos sin configurar y mensajes con Display Components V2.
 
 ## Mensajes
 

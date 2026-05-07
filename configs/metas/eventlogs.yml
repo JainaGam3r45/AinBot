@@ -1,0 +1,5 @@
+metas:
+  - key: event_log_channel
+    type: string
+    mode: guild
+    default: ""

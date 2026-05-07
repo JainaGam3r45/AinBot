@@ -1,0 +1,27 @@
+name: eventlogs
+description: "Configure the YAML event log channel."
+developer: true
+contexts:
+  - guild
+permissions:
+  - ManageGuild
+options:
+  - name: channel
+    description: "Choose the channel that will receive YAML event logs."
+    type: channel
+    channel-type: GuildText
+    required: true
+actions:
+  - id: metaSet
+    args:
+      key: event_log_channel
+      value: "%option_channel_id%"
+  - id: reply
+    args:
+      ephemeral: true
+      components:
+        - type: container
+          color: "#2f80ed"
+          components:
+            - type: text-display
+              content: "## Event logs configured\nYAML event logs will be sent to %option_channel_mention%."

@@ -1,0 +1,24 @@
+name: eventlogs-guild-member-remove
+trigger: guildMemberRemove
+conditions:
+  - id: textLengthAbove
+    args:
+      text: "%meta_event_log_channel%"
+      amount: 0
+actions:
+  - id: sendMessage
+    target:
+      channel: "%meta_event_log_channel%"
+    args:
+      components:
+        - type: container
+          color: "#fee75c"
+          components:
+            - type: text-display
+              content: "## Member Left"
+            - type: text-display
+              content: "**User:** %user_mention%\n**Username:** `%user_username%`\n**User ID:** `%user_id%`\n**Server:** `%guild_name%`"
+            - type: separator
+              spacing: 1
+            - type: text-display
+              content: "Member Left - %date% at %hour%:%minute%"
