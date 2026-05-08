@@ -130,6 +130,8 @@ Los eventos deben usar la misma forma que los eventos internos:
 
 No subas código de addons de pago a este repositorio. Distribuye el addon de pago como un archivo separado o desde un repositorio privado, y pide a los usuarios que lo coloquen en `configs/addons/music`.
 
+El primer addon comercial planeado para AinBot es el [addon de música](music-addon.md), con un precio de **USD $10**.
+
 Para un addon comercial de música, deja el repositorio público limitado a:
 
 - este cargador de addons;

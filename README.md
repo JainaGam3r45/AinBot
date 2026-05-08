@@ -14,6 +14,7 @@ El objetivo principal de revivir este proyecto es proporcionar un recurso educat
 
 - [Motor de comandos y eventos YAML](docs/yaml-engine.md)
 - [Sistema de addons privados](docs/addons.md)
+- [Addon de música de pago](docs/music-addon.md)
 
 ## Instalación
 Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/)** instalado.
