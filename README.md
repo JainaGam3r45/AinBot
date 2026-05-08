@@ -13,6 +13,7 @@ El objetivo principal de revivir este proyecto es proporcionar un recurso educat
 ## Documentación
 
 - [Motor de comandos y eventos YAML](docs/yaml-engine.md)
+- [Sistema de addons privados](docs/addons.md)
 
 ## Instalación
 Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/)** instalado.
