@@ -1,10 +1,10 @@
 # Addons
 
-AinBot can load private JavaScript addons from `build/addons`. This keeps paid modules out of the public repository while leaving the public bot able to install, list, enable, and disable them.
+AinBot puede cargar addons privados de JavaScript desde `build/addons`. Esto permite mantener los módulos de pago fuera del repositorio público, sin perder la capacidad de instalarlos, listarlos, activarlos y desactivarlos desde el bot público.
 
-## Install an addon
+## Instalar un addon
 
-Copy the addon folder into `build/addons`:
+Copia la carpeta del addon dentro de `build/addons`:
 
 ```text
 build/
@@ -15,26 +15,26 @@ build/
       README.md
 ```
 
-Restart the bot and run:
+Reinicia el bot y ejecuta:
 
 ```text
 /addons list
 ```
 
-Only developer IDs from `DEVELOPERS_IDS` can use `/addons`.
+Solo los IDs configurados en `DEVELOPERS_IDS` pueden usar `/addons`.
 
-## Enable or disable an addon
+## Activar o desactivar un addon
 
 ```text
 /addons enable name:music
 /addons disable name:music
 ```
 
-The enabled state is saved in `configs/addons.json`. That file is ignored by Git because it is runtime state and may contain private installation choices.
+El estado de activación se guarda en `configs/addons.json`. Ese archivo está ignorado por Git porque es estado de ejecución y puede contener decisiones privadas de instalación.
 
-## Addon entry file
+## Archivo de entrada del addon
 
-Every addon needs an `index.js` file. The addon can export commands, events, and an optional `load` function.
+Cada addon necesita un archivo `index.js`. El addon puede exportar comandos, eventos y una función opcional `load`.
 
 ```js
 const { SlashCommandBuilder } = require("discord.js");
@@ -70,18 +70,18 @@ module.exports = {
 };
 ```
 
-## Addon API
+## API del addon
 
-The `load` function receives:
+La función `load` recibe:
 
-- `client`: Discord client.
-- `logger`: centralized AinBot logger.
-- `addonName`: normalized addon name.
-- `root`: bot root folder.
-- `directory`: installed addon folder.
-- `database`: addon-scoped database namespace, such as `addons.music`.
+- `client`: cliente de Discord.
+- `logger`: logger centralizado de AinBot.
+- `addonName`: nombre normalizado del addon.
+- `root`: carpeta raíz del bot.
+- `directory`: carpeta donde está instalado el addon.
+- `database`: namespace de base de datos aislado para el addon, por ejemplo `addons.music`.
 
-Commands must use the same shape as internal commands:
+Los comandos deben usar la misma forma que los comandos internos:
 
 ```js
 {
@@ -91,7 +91,7 @@ Commands must use the same shape as internal commands:
 }
 ```
 
-Events must use the same shape as internal events:
+Los eventos deben usar la misma forma que los eventos internos:
 
 ```js
 {
@@ -101,13 +101,13 @@ Events must use the same shape as internal events:
 }
 ```
 
-## Paid addons
+## Addons de pago
 
-Do not commit paid addon code to this repository. Ship the paid addon as a separate archive or private repository, then ask users to place it in `build/addons/music`.
+No subas código de addons de pago a este repositorio. Distribuye el addon de pago como un archivo separado o desde un repositorio privado, y pide a los usuarios que lo coloquen en `build/addons/music`.
 
-For a commercial music addon, keep the public repo limited to:
+Para un addon comercial de música, deja el repositorio público limitado a:
 
-- this addon loader;
-- addon installation docs;
-- optional `.env.example` variables for public configuration names;
-- no music source code, player internals, license logic, or provider credentials.
+- este cargador de addons;
+- documentación sobre cómo instalar addons;
+- variables opcionales en `.env.example` para nombres de configuración pública;
+- nada de código fuente del módulo de música, lógica interna del reproductor, validación de licencias o credenciales de proveedores.
