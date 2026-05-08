@@ -1,11 +1,11 @@
 const { mkdir, readdir, readFile, writeFile } = require("fs/promises");
 const path = require("path");
 
-const addonsDirectory = path.join(process.cwd(), "build", "addons");
+const addonsDirectory = path.join(process.cwd(), "configs", "addons");
 const settingsFile = path.join(process.cwd(), "configs", "addons.json");
 
 /**
- * Loads installed addons from build/addons.
+ * Loads installed addons from configs/addons.
  * @param {object} client Discord client.
  * @param {object} logger Central logger.
  */

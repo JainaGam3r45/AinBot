@@ -1,13 +1,13 @@
 # Addons
 
-AinBot puede cargar addons privados de JavaScript desde `build/addons`. Esto permite mantener los módulos de pago fuera del repositorio público, sin perder la capacidad de instalarlos, listarlos, activarlos y desactivarlos desde el bot público.
+AinBot puede cargar addons privados de JavaScript desde `configs/addons`. Esto permite mantener los módulos de pago fuera del repositorio público, sin perder la capacidad de instalarlos, listarlos, activarlos y desactivarlos desde el bot público.
 
 ## Instalar un addon
 
-Copia la carpeta del addon dentro de `build/addons`:
+Copia la carpeta del addon dentro de `configs/addons`:
 
 ```text
-build/
+configs/
   addons/
     music/
       index.js
@@ -103,7 +103,7 @@ Los eventos deben usar la misma forma que los eventos internos:
 
 ## Addons de pago
 
-No subas código de addons de pago a este repositorio. Distribuye el addon de pago como un archivo separado o desde un repositorio privado, y pide a los usuarios que lo coloquen en `build/addons/music`.
+No subas código de addons de pago a este repositorio. Distribuye el addon de pago como un archivo separado o desde un repositorio privado, y pide a los usuarios que lo coloquen en `configs/addons/music`.
 
 Para un addon comercial de música, deja el repositorio público limitado a:
 

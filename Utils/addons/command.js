@@ -67,7 +67,7 @@ function formatAddonList(client) {
     const addons = [...(client.addons?.loaded?.values() || [])];
 
     if (!addons.length) {
-        return `No addons installed. Put addon folders in \`${client.addons?.directory || "build/addons"}\`.`;
+        return `No addons installed. Put addon folders in \`${client.addons?.directory || "configs/addons"}\`.`;
     }
 
     return addons
