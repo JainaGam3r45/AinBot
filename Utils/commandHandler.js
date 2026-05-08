@@ -1,5 +1,6 @@
 const { Client } = require("discord.js");
 const addonCommand = require("./addons/command");
+const reloadCommand = require("./reloadcommand");
 const { getEnabledAddonCommands } = require("./addons/manager");
 const { loadYamlCommands } = require("./yamlengine/commands");
 const { loadMessageTemplates } = require("./yamlengine/messages");
@@ -18,6 +19,7 @@ async function loadCommands(client) {
     const commands = [];
     const runtimeCommands = [
         addonCommand,
+        reloadCommand,
         ...getEnabledAddonCommands(client),
     ];
 

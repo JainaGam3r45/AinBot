@@ -64,6 +64,7 @@ function createYamlEvent(config, file, messages) {
         yamlName: config.name,
         name: triggers[config.trigger],
         once: Boolean(config.once) || Boolean(timerDurations[config.trigger]),
+        reloadReady: Boolean(timerDurations[config.trigger]),
         /**
          * Runs the YAML event action list.
          */

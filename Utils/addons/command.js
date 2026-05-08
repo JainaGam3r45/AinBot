@@ -1,7 +1,8 @@
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const logger = require("../logger");
 const { safeReply } = require("../safereply");
-const { loadAddons, setAddonEnabled } = require("./manager");
+const { setAddonEnabled } = require("./manager");
+const { reloadBot } = require("../reloader");
 
 const data = new SlashCommandBuilder()
     .setName("addons")
@@ -51,13 +52,8 @@ module.exports = {
             flags: MessageFlags.Ephemeral,
         });
 
-        const { loadCommands } = require("../commandHandler");
-        const { loadEvents } = require("../eventHandler");
-
         await setAddonEnabled(client, name, subcommand === "enable", logger);
-        await loadAddons(client, logger);
-        await loadEvents(client);
-        await loadCommands(client);
+        await reloadBot(client);
 
         return interaction.editReply(`Addon "${name}" ${subcommand === "enable" ? "enabled" : "disabled"}.`);
     },

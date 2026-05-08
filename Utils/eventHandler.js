@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { Client, Events } = require("discord.js");
 const { getEnabledAddonEvents } = require("./addons/manager");
 const { loadMessageTemplates } = require("./yamlengine/messages");
 const { loadMetaDefinitions } = require("./yamlengine/meta");
@@ -50,6 +50,7 @@ async function loadEvents (client) {
                     file,
                     once: Boolean(event.once),
                     execute: event.execute,
+                    reloadReady: Boolean(event.reloadReady),
                     ran: false,
                 });
 
@@ -69,6 +70,7 @@ async function loadEvents (client) {
             once: Boolean(event.once),
             rest: Boolean(event.rest),
             execute: event.execute,
+            reloadReady: Boolean(event.reloadReady),
         });
 
         logger.debug(`Loaded addon event ${event.name} from ${event.addon}`);
@@ -83,12 +85,15 @@ async function loadEvents (client) {
             once: Boolean(event.once),
             rest: Boolean(event.rest),
             execute: event.execute,
+            reloadReady: Boolean(event.reloadReady),
         });
     }
 
     for (const group of eventGroups.values()) {
         registerEventGroup(client, group, logger);
     }
+
+    await runReloadReadyHandlers(client, eventGroups, logger);
 
     logger.info("Events loading completed.");
 }
@@ -148,6 +153,7 @@ function addEventToGroup(eventGroups, event) {
         file: event.file,
         once: Boolean(event.once),
         execute: event.execute,
+        reloadReady: Boolean(event.reloadReady),
         ran: false,
     });
 
@@ -156,6 +162,22 @@ function addEventToGroup(eventGroups, event) {
 
 function normalizeEvents(value) {
     return Array.isArray(value) ? value : [value];
+}
+
+async function runReloadReadyHandlers(client, eventGroups, logger) {
+    if (!client.isReady?.()) return;
+
+    const readyGroup = eventGroups.get(`client:${Events.ClientReady}`);
+    const handlers = readyGroup?.handlers.filter((handler) => handler.reloadReady) || [];
+
+    for (const handler of handlers) {
+        try {
+            handler.ran = true;
+            await handler.execute(client);
+        } catch (error) {
+            logger.recovered(`Ready reload handler failed in ${handler.file}`, error);
+        }
+    }
 }
 
 module.exports = { loadEvents };
