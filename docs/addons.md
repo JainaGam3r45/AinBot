@@ -43,7 +43,7 @@ module.exports = {
     name: "music",
     version: "1.0.0",
     description: "Adds paid music playback commands.",
-    author: "AinBot",
+    author: "JainaGam3r45",
     commands: [
         {
             data: new SlashCommandBuilder()
