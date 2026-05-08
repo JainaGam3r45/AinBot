@@ -1,5 +1,6 @@
 require("dotenv").config({ quiet: true });
 const logger = require('./Utils/logger');
+const { loadAddons } = require("./Utils/addons/manager");
 const { installCrashGuard, shutdown } = require("./Utils/crashguard");
 const { createDatabase } = require("./database");
 
@@ -62,6 +63,7 @@ async function main() {
         client.database = await createDatabase();
         logger.info(`Database provider: ${client.database.config.provider}.`);
 
+        await loadAddons(client, logger);
         await loadEvents(client);
         await client.login(process.env.BOT_TOKEN);
         logger.info("Discord login request completed.");

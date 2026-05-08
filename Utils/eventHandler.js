@@ -1,4 +1,5 @@
 const { Client } = require("discord.js");
+const { getEnabledAddonEvents } = require("./addons/manager");
 const { loadMessageTemplates } = require("./yamlengine/messages");
 const { loadMetaDefinitions } = require("./yamlengine/meta");
 const { loadYamlEvents } = require("./yamlengine/events");
@@ -61,24 +62,28 @@ async function loadEvents (client) {
         }
     }
 
+    for (const event of getEnabledAddonEvents(client)) {
+        addEventToGroup(eventGroups, {
+            file: `addon:${event.addon}`,
+            name: event.name,
+            once: Boolean(event.once),
+            rest: Boolean(event.rest),
+            execute: event.execute,
+        });
+
+        logger.debug(`Loaded addon event ${event.name} from ${event.addon}`);
+    }
+
     const yamlEvents = await loadYamlEvents(client, client.yamlMessages, logger);
 
     for (const event of yamlEvents) {
-        const groupKey = `${event.rest ? "rest" : "client"}:${event.name}`;
-        const group = eventGroups.get(groupKey) ?? {
-            name: event.name,
-            rest: Boolean(event.rest),
-            handlers: [],
-        };
-
-        group.handlers.push({
+        addEventToGroup(eventGroups, {
             file: event.yamlName,
+            name: event.name,
             once: Boolean(event.once),
+            rest: Boolean(event.rest),
             execute: event.execute,
-            ran: false,
         });
-
-        eventGroups.set(groupKey, group);
     }
 
     for (const group of eventGroups.values()) {
@@ -129,6 +134,24 @@ function registerEventGroup(client, group, logger) {
     }
 
     logger.debug(`Registered ${group.handlers.length} handler(s) for ${group.name}.`);
+}
+
+function addEventToGroup(eventGroups, event) {
+    const groupKey = `${event.rest ? "rest" : "client"}:${event.name}`;
+    const group = eventGroups.get(groupKey) ?? {
+        name: event.name,
+        rest: Boolean(event.rest),
+        handlers: [],
+    };
+
+    group.handlers.push({
+        file: event.file,
+        once: Boolean(event.once),
+        execute: event.execute,
+        ran: false,
+    });
+
+    eventGroups.set(groupKey, group);
 }
 
 function normalizeEvents(value) {

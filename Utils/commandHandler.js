@@ -1,4 +1,6 @@
 const { Client } = require("discord.js");
+const addonCommand = require("./addons/command");
+const { getEnabledAddonCommands } = require("./addons/manager");
 const { loadYamlCommands } = require("./yamlengine/commands");
 const { loadMessageTemplates } = require("./yamlengine/messages");
 const { loadMetaDefinitions } = require("./yamlengine/meta");
@@ -14,22 +16,26 @@ async function loadCommands(client) {
     await client.commands.clear();
 
     const commands = [];
+    const runtimeCommands = [
+        addonCommand,
+        ...getEnabledAddonCommands(client),
+    ];
 
     client.yamlMessages = await loadMessageTemplates(logger);
     client.yamlMetas = await loadMetaDefinitions(logger);
 
     const yamlCommands = await loadYamlCommands(client, client.yamlMessages, logger);
 
-    for (const command of yamlCommands) {
+    for (const command of [...runtimeCommands, ...yamlCommands]) {
         if (client.commands.has(command.data.name)) {
-            logger.issue(`Skipped YAML command ${command.data.name} because another command already uses that name.`);
+            logger.issue(`Skipped command ${command.data.name} because another command already uses that name.`);
             continue;
         }
 
         client.commands.set(command.data.name, command);
         commands.push(command.data.toJSON());
 
-        logger.debug(`Registered YAML command ${command.data.name}`);
+        logger.debug(`Registered command ${command.data.name}`);
     }
 
     await client.application.commands.set(commands);
