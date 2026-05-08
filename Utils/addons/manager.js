@@ -84,7 +84,7 @@ async function loadAddon(folder, folderName, client, logger, settings) {
 }
 
 async function loadAddonConfig(folder, logger) {
-    for (const name of ["config.yml", "config.yaml", "addon.yml", "addon.yaml"]) {
+    for (const name of ["config.yml", "config.yaml"]) {
         try {
             const source = await readFile(path.join(folder, name), "utf8");
             const config = YAML.parse(source) || {};

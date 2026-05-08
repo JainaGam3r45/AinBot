@@ -73,7 +73,7 @@ module.exports = {
 
 ## Configuración del addon
 
-Si existe `config.yml`, `config.yaml`, `addon.yml` o `addon.yaml`, AinBot lo carga y lo entrega al addon como `config`.
+Si existe `config.yml` o `config.yaml`, AinBot lo carga y lo entrega al addon como `config`.
 
 ```yml
 commands:
