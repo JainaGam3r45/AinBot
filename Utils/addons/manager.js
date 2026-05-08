@@ -1,5 +1,6 @@
 const { mkdir, readdir, readFile, writeFile } = require("fs/promises");
 const path = require("path");
+const YAML = require("yaml");
 
 const addonsDirectory = path.join(process.cwd(), "configs", "addons");
 const settingsFile = path.join(process.cwd(), "configs", "addons.json");
@@ -53,19 +54,21 @@ async function loadAddon(folder, folderName, client, logger, settings) {
     const entryFile = path.join(folder, "index.js");
 
     try {
+        const config = await loadAddonConfig(folder, logger);
         delete require.cache[require.resolve(entryFile)];
         const exported = require(entryFile);
-        const definition = typeof exported === "function" ? await exported(createAddonContext(client, logger, folderName)) : exported;
+        const definition = typeof exported === "function" ? await exported(createAddonContext(client, logger, folderName, config)) : exported;
         const addon = normalizeAddon(definition, folderName);
         const disabled = settings.disabled.includes(addon.name);
 
         addon.folder = folder;
+        addon.config = config;
         addon.enabled = !disabled;
         addon.commands = disabled ? [] : normalizeList(addon.commands);
         addon.events = disabled ? [] : normalizeList(addon.events);
 
         if (!disabled && typeof addon.load === "function") {
-            const loaded = await addon.load(createAddonContext(client, logger, addon.name));
+            const loaded = await addon.load(createAddonContext(client, logger, addon.name, config));
 
             addon.commands.push(...normalizeList(loaded?.commands));
             addon.events.push(...normalizeList(loaded?.events));
@@ -80,9 +83,32 @@ async function loadAddon(folder, folderName, client, logger, settings) {
     }
 }
 
-function createAddonContext(client, logger, addonName) {
+async function loadAddonConfig(folder, logger) {
+    for (const name of ["config.yml", "config.yaml", "addon.yml", "addon.yaml"]) {
+        try {
+            const source = await readFile(path.join(folder, name), "utf8");
+            const config = YAML.parse(source) || {};
+
+            if (!isPlainObject(config)) {
+                throw new Error(`${name} must contain a YAML object.`);
+            }
+
+            return config;
+        } catch (error) {
+            if (error.code === "ENOENT") continue;
+
+            logger.issue(`Failed to load addon config ${name}`, error);
+            return {};
+        }
+    }
+
+    return {};
+}
+
+function createAddonContext(client, logger, addonName, config) {
     return {
         client,
+        config,
         logger,
         addonName,
         root: process.cwd(),
@@ -122,6 +148,10 @@ function normalizeAddonName(value) {
 function normalizeList(value) {
     if (!value) return [];
     return Array.isArray(value) ? value.filter(Boolean) : [value];
+}
+
+function isPlainObject(value) {
+    return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 async function loadAddonSettings(logger) {

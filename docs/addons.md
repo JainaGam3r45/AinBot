@@ -11,6 +11,7 @@ configs/
   addons/
     music/
       index.js
+      config.yml
       package.json
       README.md
 ```
@@ -34,7 +35,7 @@ El estado de activación se guarda en `configs/addons.json`. Ese archivo está i
 
 ## Archivo de entrada del addon
 
-Cada addon necesita un archivo `index.js`. El addon puede exportar comandos, eventos y una función opcional `load`.
+Cada addon necesita un archivo `index.js`. También puede incluir un `config.yml` para mensajes, opciones, comandos activados y valores editables por el usuario.
 
 ```js
 const { SlashCommandBuilder } = require("discord.js");
@@ -59,7 +60,7 @@ module.exports = {
         },
     ],
     events: [],
-    async load({ logger, database }) {
+    async load({ logger, database, config }) {
         logger.info("Music addon loaded.");
 
         return {
@@ -70,6 +71,29 @@ module.exports = {
 };
 ```
 
+## Configuración del addon
+
+Si existe `config.yml`, `config.yaml`, `addon.yml` o `addon.yaml`, AinBot lo carga y lo entrega al addon como `config`.
+
+```yml
+commands:
+  play:
+    enabled: true
+    name: play
+    description: Play a song.
+
+messages:
+  loaded: Music addon loaded.
+  no_results: I could not find anything for that search.
+```
+
+El addon decide cómo usar esa configuración. La convención recomendada es usar YAML para:
+
+- traducir mensajes;
+- cambiar nombres y descripciones de comandos;
+- activar o desactivar comandos del addon;
+- ajustar límites, proveedores y valores por defecto.
+
 ## API del addon
 
 La función `load` recibe:
@@ -79,6 +103,7 @@ La función `load` recibe:
 - `addonName`: nombre normalizado del addon.
 - `root`: carpeta raíz del bot.
 - `directory`: carpeta donde está instalado el addon.
+- `config`: configuración YAML cargada desde la carpeta del addon.
 - `database`: namespace de base de datos aislado para el addon, por ejemplo `addons.music`.
 
 Los comandos deben usar la misma forma que los comandos internos:
