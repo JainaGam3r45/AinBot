@@ -56,15 +56,18 @@ Ejemplo de estructura:
 ```text
 configs/
   Music/
+    components/
+      cards.js
+      messages.js
+    config/
+      config.js
     events/
     interactions/
       musiccommands.js
     resources/
-      cards.js
-      config.js
       config.yml
+    services/
       lavalink.js
-      messages.js
       musicmanager.js
     index.js
     README.md
