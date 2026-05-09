@@ -242,7 +242,7 @@ Las acciones `addInviteBonus`, `removeInviteBonus`, `setInviteBonus` y `sendPres
 
 Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`, se guardan en memoria y se pierden al reiniciar el proceso.
 
-`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/_Example/modalprofile`, desactivado por defecto porque el módulo empieza con `_`.
+`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/_Example/resources`, desactivado por defecto porque el módulo empieza con `_`.
 
 ## Condiciones
 
