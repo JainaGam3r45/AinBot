@@ -115,6 +115,24 @@ class Logger {
     }
 
     /**
+     * Writes the online startup banner.
+     * @param {string} name Project name.
+     * @param {string} version Project version.
+     */
+    onlineBanner(name, version) {
+        const border = "#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#";
+        const message = centerText(`• ${name} v${version} is now Online! •`, border.length);
+
+        process.stdout.write([
+            border,
+            "",
+            message,
+            "",
+            border,
+        ].join("\n") + "\n");
+    }
+
+    /**
      * Formats and writes a log entry.
      * @param {string} level Registered log level.
      * @param {unknown[]} values Values to print.
@@ -173,6 +191,15 @@ function formatValue(value) {
         colors: true,
         depth: 4,
     });
+}
+
+function centerText(value, width) {
+    const text = String(value);
+    const padding = Math.max(width - text.length, 0);
+    const left = Math.floor(padding / 2);
+    const right = padding - left;
+
+    return `${" ".repeat(left)}${text}${" ".repeat(right)}`;
 }
 
 /**

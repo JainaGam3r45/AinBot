@@ -1,4 +1,5 @@
 const { ActivityType, ChatInputCommandInteraction, Client, Events, MessageFlags, PresenceUpdateStatus } = require("discord.js");
+const project = require("../../../package.json");
 const { loadCommands } = require("../loaders/commandhandler");
 const logger = require("../runtime/logger");
 const { isHandledInteractionResponseError, safeReply } = require("../runtime/safereply");
@@ -25,6 +26,7 @@ module.exports = [
             });
 
             logger.info(`${client.user.tag} (${client.user.id}) is online and ready to serve you.`);
+            logger.onlineBanner(project.name, project.version);
         },
     },
     {
