@@ -136,7 +136,8 @@ class Logger {
             colorize(version, `${bold}${yellow}`),
             colorize(" is now ", white),
             colorize("Online", `${bold}${green}`),
-            colorize("! •", green),
+            colorize("!", white),
+            colorize(" •", green),
         ], border.length);
         const description = centerSegments([
             colorize("Running as ", white),
