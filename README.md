@@ -35,6 +35,8 @@ DEVELOPER_IDS= [
 ]
 ```
 
+Bun carga este archivo automáticamente al ejecutar los scripts del proyecto.
+
 3. Instala las dependencias:
 ```bash
 bun run install:dev

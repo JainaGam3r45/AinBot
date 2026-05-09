@@ -1,4 +1,3 @@
-require("dotenv").config({ quiet: true });
 const logger = require('./Utils/logger');
 const { loadAddons } = require("./Utils/addons/manager");
 const { installCrashGuard, shutdown } = require("./Utils/crashguard");
