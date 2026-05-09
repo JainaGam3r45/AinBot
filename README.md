@@ -20,8 +20,8 @@ El objetivo principal de revivir este proyecto es proporcionar un recurso educat
 
 - `src/`: núcleo técnico del bot, loaders, runtime, eventos internos, motor YAML y base de datos.
 - `configs/`: módulos funcionales del bot. Los sistemas activos viven como carpetas de primer nivel, por ejemplo `EventLogs` y `Utilities`.
-- `configs/<Modulo>/resources/`: configuración YAML del módulo, como comandos, eventos, mensajes y metas.
-- `configs/<Modulo>/interactions` y `configs/<Modulo>/events`: código JavaScript propio del módulo cuando lo necesite.
+- `configs/<Modulo>/resources/`: configuración del módulo, incluyendo `index.yml` y YAML de comandos, eventos, mensajes y metas.
+- `configs/<Modulo>/interactions`, `configs/<Modulo>/events`, `configs/<Modulo>/actions` y carpetas similares: código JavaScript propio del módulo cuando lo necesite.
 - `configs/_Example/`: comandos, eventos, mensajes y metas de demostración. No se carga automáticamente porque empieza con `_`.
 - `configs/Music/`: ubicación esperada del addon privado de música cuando se instala localmente.
 

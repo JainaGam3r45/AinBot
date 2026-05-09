@@ -8,6 +8,8 @@ Este bot carga comandos, eventos y mensajes reutilizables con Display Components
 - `configs/<Modulo>/resources/events`: scripts de eventos definidos en YAML.
 - `configs/<Modulo>/resources/messages`: plantillas reutilizables de mensajes con Display Components.
 - `configs/<Modulo>/resources/metas`: definiciones de metadatos.
+- `configs/<Modulo>/resources/index.yml`: metadatos descriptivos del módulo.
+- `configs/<Modulo>/interactions`, `configs/<Modulo>/events`, `configs/<Modulo>/actions` y carpetas equivalentes: código JavaScript del módulo cuando haga falta.
 - `src/core/yamlengine`: runtime que interpreta YAML, renderiza Display Components, evalúa condiciones y ejecuta acciones.
 - `src/core/events/core.js`: puente ligero con Discord que carga comandos YAML y enruta interacciones.
 
