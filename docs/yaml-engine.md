@@ -4,12 +4,12 @@ Este bot carga comandos, eventos y mensajes reutilizables con Display Components
 
 ## Carpetas
 
-- `configs/<Modulo>/resources/interactions`: comandos slash definidos en YAML.
-- `configs/<Modulo>/resources/events`: scripts de eventos definidos en YAML.
-- `configs/<Modulo>/resources/messages`: plantillas reutilizables de mensajes con Display Components.
-- `configs/<Modulo>/resources/metas`: definiciones de metadatos.
-- `configs/<Modulo>/resources/index.yml`: metadatos descriptivos del módulo.
-- `configs/<Modulo>/interactions`, `configs/<Modulo>/events`, `configs/<Modulo>/actions` y carpetas equivalentes: código JavaScript del módulo cuando haga falta.
+- `configs/<Modulo>/interactions`: comandos slash definidos en YAML para módulos solo YAML.
+- `configs/<Modulo>/events`: scripts de eventos definidos en YAML para módulos solo YAML.
+- `configs/<Modulo>/messages`: plantillas reutilizables de mensajes con Display Components para módulos solo YAML.
+- `configs/<Modulo>/metas`: definiciones de metadatos para módulos solo YAML.
+- `configs/<Modulo>/index.yml`: metadatos descriptivos del módulo.
+- `configs/<Modulo>/resources`: configuración YAML para módulos que también tienen código JavaScript en carpetas como `interactions`, `events`, `actions`, `services` o `components`.
 - `src/core/yamlengine`: runtime que interpreta YAML, renderiza Display Components, evalúa condiciones y ejecuta acciones.
 - `src/core/events/core.js`: puente ligero con Discord que carga comandos YAML y enruta interacciones.
 
@@ -17,7 +17,7 @@ Los archivos terminados en `.yml` o `.yaml` se cargan de forma recursiva. Para d
 
 ## Comandos
 
-Crea un archivo dentro de `configs/<Modulo>/resources/interactions`.
+Crea un archivo dentro de `configs/<Modulo>/interactions`.
 
 ```yml
 name: hello
@@ -47,7 +47,7 @@ Los placeholders de opciones incluyen `%option_name%`, `%option_name_id%`, `%opt
 
 ## Eventos
 
-Crea un archivo dentro de `configs/<Modulo>/resources/events`.
+Crea un archivo dentro de `configs/<Modulo>/events`.
 
 ```yml
 name: welcome-message
@@ -134,7 +134,7 @@ El target se resuelve antes de evaluar las condiciones de la acción, así que l
 
 ## Metas
 
-Puedes declarar metadatos en `configs/<Modulo>/resources/metas`. Los archivos `.yml` o `.yaml` se cargan de forma recursiva y pueden contener una meta directa o una lista bajo `metas`.
+Puedes declarar metadatos en `configs/<Modulo>/metas`. Los archivos `.yml` o `.yaml` se cargan de forma recursiva y pueden contener una meta directa o una lista bajo `metas`.
 
 ```yml
 metas:
@@ -167,7 +167,7 @@ Si una meta no está declarada, el motor conserva el comportamiento antiguo: alc
 
 ## Ejemplo de logs de eventos
 
-El proyecto incluye un sistema activo de logs de eventos en `configs/EventLogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/EventLogs/resources/metas/eventlogs.yml`, y los YAML del sistema viven en `configs/EventLogs/resources`.
+El proyecto incluye un sistema activo de logs de eventos en `configs/EventLogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/EventLogs/metas/eventlogs.yml`.
 
 Para activar los logs en un servidor, usa el comando de desarrollador:
 
@@ -190,7 +190,7 @@ Cada evento usa `target.channel: "%meta_event_log_channel%"`, una condición `te
 
 ## Mensajes
 
-Crea plantillas reutilizables de mensajes dentro de `configs/<Modulo>/resources/messages`.
+Crea plantillas reutilizables de mensajes dentro de `configs/<Modulo>/messages`.
 
 ```yml
 id: default-welcome

@@ -33,7 +33,7 @@ const buttonStyles = {
  */
 async function loadMessageTemplates(logger) {
     const templates = new Map();
-    const files = await loadModuleYamlFiles(path.join("resources", "messages"), logger, ["configs/messages"]);
+    const files = await loadModuleYamlFiles([path.join("messages"), path.join("resources", "messages")], logger, ["configs/messages"]);
 
     for (const file of files) {
         const id = String(file.value.id || file.id).trim();

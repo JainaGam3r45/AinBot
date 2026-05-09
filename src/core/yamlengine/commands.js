@@ -35,7 +35,7 @@ const contextTypes = {
  * @param {object} logger Logger used for invalid configs.
  */
 async function loadYamlCommands(client, messages, logger) {
-    const files = await loadModuleYamlFiles("resources/interactions", logger, ["configs/commands"]);
+    const files = await loadModuleYamlFiles(["interactions", "resources/interactions"], logger, ["configs/commands"]);
     const commands = [];
 
     for (const file of files) {

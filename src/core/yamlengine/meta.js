@@ -4,7 +4,7 @@ const { loadModuleYamlFiles } = require("./files");
 
 async function loadMetaDefinitions(logger) {
     const definitions = new Map();
-    const files = await loadModuleYamlFiles(path.join("resources", "metas"), logger, ["configs/metas"]);
+    const files = await loadModuleYamlFiles([path.join("metas"), path.join("resources", "metas")], logger, ["configs/metas"]);
 
     for (const file of files) {
         try {
