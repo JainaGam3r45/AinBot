@@ -1,20 +1,21 @@
 # Motor de comandos y eventos YAML
 
-Este bot carga comandos, eventos y mensajes reutilizables con Display Components desde archivos YAML. JavaScript queda reservado para el núcleo de ejecución dentro de `Utils` y `Events/core.js`; el comportamiento del servidor debería agregarse mediante YAML.
+Este bot carga comandos, eventos y mensajes reutilizables con Display Components desde archivos YAML. JavaScript queda reservado para el núcleo de ejecución dentro de `src/core`; el comportamiento del servidor debería agregarse mediante módulos dentro de `configs`.
 
 ## Carpetas
 
-- `configs/commands`: comandos slash.
-- `configs/events`: scripts de eventos.
-- `configs/messages`: plantillas reutilizables de mensajes con Display Components.
-- `Utils/yamlengine`: runtime que interpreta YAML, renderiza Display Components, evalúa condiciones y ejecuta acciones.
-- `Events/core.js`: puente ligero con Discord que carga comandos YAML y enruta interacciones.
+- `configs/<Modulo>/interactions`: comandos slash.
+- `configs/<Modulo>/events`: scripts de eventos.
+- `configs/<Modulo>/resources/messages`: plantillas reutilizables de mensajes con Display Components.
+- `configs/<Modulo>/resources/metas`: definiciones de metadatos.
+- `src/core/yamlengine`: runtime que interpreta YAML, renderiza Display Components, evalúa condiciones y ejecuta acciones.
+- `src/core/events/core.js`: puente ligero con Discord que carga comandos YAML y enruta interacciones.
 
-Los archivos terminados en `.yml` o `.yaml` se cargan de forma recursiva. Para desactivar un archivo o carpeta sin eliminarlo, agrega `_` al inicio de su nombre.
+Los archivos terminados en `.yml` o `.yaml` se cargan de forma recursiva. Para desactivar un módulo, archivo o carpeta sin eliminarlo, agrega `_` al inicio de su nombre. El proyecto también acepta las rutas legacy `configs/commands`, `configs/events`, `configs/messages` y `configs/metas` para no romper instalaciones antiguas.
 
 ## Comandos
 
-Crea un archivo dentro de `configs/commands`.
+Crea un archivo dentro de `configs/<Modulo>/interactions`.
 
 ```yml
 name: hello
@@ -44,7 +45,7 @@ Los placeholders de opciones incluyen `%option_name%`, `%option_name_id%`, `%opt
 
 ## Eventos
 
-Crea un archivo dentro de `configs/events`.
+Crea un archivo dentro de `configs/<Modulo>/events`.
 
 ```yml
 name: welcome-message
@@ -131,7 +132,7 @@ El target se resuelve antes de evaluar las condiciones de la acción, así que l
 
 ## Metas
 
-Puedes declarar metadatos en `configs/metas`. Los archivos `.yml` o `.yaml` se cargan de forma recursiva y pueden contener una meta directa o una lista bajo `metas`.
+Puedes declarar metadatos en `configs/<Modulo>/resources/metas`. Los archivos `.yml` o `.yaml` se cargan de forma recursiva y pueden contener una meta directa o una lista bajo `metas`.
 
 ```yml
 metas:
@@ -164,7 +165,7 @@ Si una meta no está declarada, el motor conserva el comportamiento antiguo: alc
 
 ## Ejemplo de logs de eventos
 
-El proyecto incluye un ejemplo activo de logs de eventos en `configs/events/eventlogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/metas/eventlogs.yml`.
+El proyecto incluye un sistema activo de logs de eventos en `configs/EventLogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/EventLogs/resources/metas/eventlogs.yml`.
 
 Para activar los logs en un servidor, usa el comando de desarrollador:
 
@@ -187,7 +188,7 @@ Cada evento usa `target.channel: "%meta_event_log_channel%"`, una condición `te
 
 ## Mensajes
 
-Crea plantillas reutilizables de mensajes dentro de `configs/messages`.
+Crea plantillas reutilizables de mensajes dentro de `configs/<Modulo>/resources/messages`.
 
 ```yml
 id: default-welcome
@@ -239,7 +240,7 @@ Las acciones `addInviteBonus`, `removeInviteBonus`, `setInviteBonus` y `sendPres
 
 Los valores meta usan la base de datos configurada. Si `DATABASE_PROVIDER=none`, se guardan en memoria y se pierden al reiniciar el proceso.
 
-`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/commands/modalprofile.yml`, con guardado de datos en `configs/events/modalprofile.yml`, metas declaradas en `configs/metas/modalprofile.yml` y lectura de esos valores en `configs/commands/modalprofiledata.yml`.
+`showModal` soporta modales modernos con hasta cinco componentes superiores. Usa `label` para envolver `text-input`, `string-select` o `file-upload`, y `text-display` para texto informativo independiente. El ejemplo completo está en `configs/_Example/modalprofile`, desactivado por defecto porque el módulo empieza con `_`.
 
 ## Condiciones
 

@@ -9,7 +9,7 @@ El precio del addon es **USD $10**.
 El código del addon no se incluye en este repositorio público. Se entrega por separado y se instala copiando su carpeta dentro de:
 
 ```text
-configs/addons/music
+configs/Music
 ```
 
 ## Qué incluye
@@ -22,7 +22,7 @@ configs/addons/music
 - Botones interactivos para pausar, reanudar y saltar canciones.
 - Botones configurables desde YAML: texto, emoji, color, visibilidad y estado activo.
 - Desactivación automática de botones cuando la canción termina, se salta o se detiene.
-- Mensajes y diseño configurables desde `config.yml`.
+- Mensajes y diseño configurables desde `resources/config.yml`.
 - Soporte para carátulas cuando Lavalink entrega artwork.
 - Enlaces directos a canciones usando formato Markdown como `[Title](URL)`.
 - Integración con el sistema de addons privados de AinBot.
@@ -40,13 +40,13 @@ configs/addons/music
 /volume amount:<1-150>
 ```
 
-Los nombres, descripciones y opciones de los comandos se pueden cambiar desde `config.yml`.
+Los nombres, descripciones y opciones de los comandos se pueden cambiar desde `resources/config.yml`.
 
 ## Fácil de instalar
 
 1. Compra o recibe el paquete privado del addon.
-2. Copia la carpeta `music` dentro de `configs/addons`.
-3. Configura Lavalink en `configs/addons/music/config.yml`.
+2. Copia la carpeta `Music` dentro de `configs`.
+3. Configura Lavalink en `configs/Music/resources/config.yml`.
 4. Reinicia AinBot.
 5. Ejecuta `/addons list` para confirmar que aparece instalado.
 6. Entra a un canal de voz y usa `/play`.
@@ -55,12 +55,19 @@ Ejemplo de estructura:
 
 ```text
 configs/
-  addons/
-    music/
-      index.js
+  Music/
+    events/
+    interactions/
+      musiccommands.js
+    resources/
+      cards.js
+      config.js
       config.yml
-      README.md
-      src/
+      lavalink.js
+      messages.js
+      musicmanager.js
+    index.js
+    README.md
 ```
 
 ## Configuración
@@ -96,7 +103,7 @@ design:
 
 ## Diseño editable
 
-El usuario puede personalizar las tarjetas desde `config.yml`:
+El usuario puede personalizar las tarjetas desde `resources/config.yml`:
 
 - color lateral del contenedor;
 - separadores entre secciones;

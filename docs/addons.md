@@ -1,19 +1,21 @@
 # Addons
 
-AinBot puede cargar addons privados de JavaScript desde `configs/addons`. Esto permite mantener los módulos de pago fuera del repositorio público, sin perder la capacidad de instalarlos, listarlos, activarlos y desactivarlos desde el bot público.
+AinBot puede cargar módulos privados de JavaScript directamente desde `configs`. Esto permite mantener módulos de pago fuera del repositorio público, sin perder la capacidad de instalarlos, listarlos, activarlos y desactivarlos desde el bot público.
 
 ## Instalar un addon
 
-Copia la carpeta del addon dentro de `configs/addons`:
+Copia la carpeta del addon dentro de `configs`:
 
 ```text
 configs/
-  addons/
-    music/
-      index.js
+  Music/
+    events/
+    interactions/
+    resources/
       config.yml
-      package.json
-      README.md
+    index.js
+    package.json
+    README.md
 ```
 
 Reinicia el bot y ejecuta:
@@ -31,11 +33,11 @@ Solo los IDs configurados en `DEVELOPERS_IDS` pueden usar `/addons`.
 /addons disable name:music
 ```
 
-El estado de activación se guarda en `configs/addons.json`. Ese archivo está ignorado por Git porque es estado de ejecución y puede contener decisiones privadas de instalación.
+El estado de activación se guarda en `configs/modules.json`. Ese archivo está ignorado por Git porque es estado de ejecución y puede contener decisiones privadas de instalación. El loader también lee `configs/addons.json` si existe, para conservar instalaciones antiguas.
 
 ## Archivo de entrada del addon
 
-Cada addon necesita un archivo `index.js`. También puede incluir un `config.yml` para mensajes, opciones, comandos activados y valores editables por el usuario.
+Cada addon necesita un archivo `index.js`. También puede incluir `resources/config.yml` para mensajes, opciones, comandos activados y valores editables por el usuario.
 
 ```js
 const { SlashCommandBuilder } = require("discord.js");
@@ -73,7 +75,7 @@ module.exports = {
 
 ## Configuración del addon
 
-Si existe `config.yml` o `config.yaml`, AinBot lo carga y lo entrega al addon como `config`.
+Si existe `resources/config.yml` o `resources/config.yaml`, AinBot lo carga y lo entrega al addon como `config`. Por compatibilidad, también acepta `config.yml` y `config.yaml` en la raíz del addon.
 
 ```yml
 commands:
@@ -128,7 +130,7 @@ Los eventos deben usar la misma forma que los eventos internos:
 
 ## Addons de pago
 
-No subas código de addons de pago a este repositorio. Distribuye el addon de pago como un archivo separado o desde un repositorio privado, y pide a los usuarios que lo coloquen en `configs/addons/music`.
+No subas código de addons de pago a este repositorio. Distribuye el addon de pago como un archivo separado o desde un repositorio privado, y pide a los usuarios que lo coloquen en `configs/Music`.
 
 El primer addon comercial planeado para AinBot es el [addon de música](music-addon.md), con un precio de **USD $10**.
 

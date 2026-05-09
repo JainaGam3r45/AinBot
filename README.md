@@ -16,6 +16,13 @@ El objetivo principal de revivir este proyecto es proporcionar un recurso educat
 - [Sistema de addons privados](docs/addons.md)
 - [Addon de música de pago](docs/music-addon.md)
 
+## Estructura
+
+- `src/`: núcleo técnico del bot, loaders, runtime, eventos internos, motor YAML y base de datos.
+- `configs/`: módulos funcionales del bot. Los sistemas activos viven como carpetas de primer nivel, por ejemplo `EventLogs` y `Utilities`.
+- `configs/_Example/`: comandos, eventos, mensajes y metas de demostración. No se carga automáticamente porque empieza con `_`.
+- `configs/Music/`: ubicación esperada del addon privado de música cuando se instala localmente.
+
 ## Instalación
 Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/)** instalado.
 
