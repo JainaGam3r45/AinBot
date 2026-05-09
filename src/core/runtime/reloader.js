@@ -1,5 +1,5 @@
 const logger = require("./logger");
-const { loadAddons } = require("./addons/manager");
+const { loadAddons } = require("../addons/manager");
 
 const activeReloads = new WeakMap();
 
@@ -18,8 +18,8 @@ async function reloadBot(client) {
 }
 
 async function runReload(client) {
-    const { loadCommands } = require("./commandHandler");
-    const { loadEvents } = require("./eventHandler");
+    const { loadCommands } = require("../loaders/commandhandler");
+    const { loadEvents } = require("../loaders/eventhandler");
 
     logger.info("Reloading addons, events, commands, and YAML configs.");
 

@@ -1,16 +1,16 @@
 const { Client, Events } = require("discord.js");
-const { getEnabledAddonEvents } = require("./addons/manager");
-const { loadMessageTemplates } = require("./yamlengine/messages");
-const { loadMetaDefinitions } = require("./yamlengine/meta");
-const { loadYamlEvents } = require("./yamlengine/events");
+const { getEnabledAddonEvents } = require("../addons/manager");
+const { loadMessageTemplates } = require("../yamlengine/messages");
+const { loadMetaDefinitions } = require("../yamlengine/meta");
+const { loadYamlEvents } = require("../yamlengine/events");
 
 /**
  * Loads event files and registers their listeners on the Discord client.
  * @param {Client} client Discord client with events and eventDispatchers collections.
  */
 async function loadEvents (client) {
-    const { loadFiles } = require("./fileLoader");
-    const logger = require("./logger");
+    const { loadFiles } = require("./fileloader");
+    const logger = require("../runtime/logger");
 
     client.eventDispatchers ??= new Map();
     client.yamlEventTimers ??= new Set();
@@ -31,7 +31,7 @@ async function loadEvents (client) {
     client.yamlMessages ??= await loadMessageTemplates(logger);
     client.yamlMetas ??= await loadMetaDefinitions(logger);
 
-    const files = await loadFiles("Events");
+    const files = await loadFiles("src/core/events");
     const eventGroups = new Map();
 
     for (const file of files) {

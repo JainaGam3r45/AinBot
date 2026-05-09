@@ -1,9 +1,10 @@
 const warnedClients = new WeakSet();
-const { loadYamlFiles } = require("./files");
+const path = require("path");
+const { loadModuleYamlFiles } = require("./files");
 
 async function loadMetaDefinitions(logger) {
     const definitions = new Map();
-    const files = await loadYamlFiles("configs/metas", logger);
+    const files = await loadModuleYamlFiles(path.join("resources", "metas"), logger, ["configs/metas"]);
 
     for (const file of files) {
         try {

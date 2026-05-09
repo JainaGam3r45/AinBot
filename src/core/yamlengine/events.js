@@ -1,5 +1,5 @@
 const { ComponentType, Events } = require("discord.js");
-const { loadYamlFiles } = require("./files");
+const { loadModuleYamlFiles } = require("./files");
 const { createRuntimeContext } = require("./context");
 const { runActions, validateActions } = require("./actions");
 const { evaluateConditions, validateConditions } = require("./conditions");
@@ -39,7 +39,7 @@ const timerDurations = {
  * @param {object} logger Logger used for invalid configs.
  */
 async function loadYamlEvents(client, messages, logger) {
-    const files = await loadYamlFiles("configs/events", logger);
+    const files = await loadModuleYamlFiles("events", logger, ["configs/events"]);
     const events = [];
 
     for (const file of files) {

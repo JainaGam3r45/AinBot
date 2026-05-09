@@ -1,4 +1,4 @@
-const logger = require("../logger");
+const logger = require("../runtime/logger");
 const { evaluateConditions } = require("./conditions");
 
 function createRuntimeContext(base) {

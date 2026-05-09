@@ -1,18 +1,18 @@
 {
   "name": "ainbot",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "AinBot es un bot de Discord desarrollado originalmente en 2018 utilizando la versión 11.4.2 de discord.js. Este proyecto fue creado inicialmente como un bot personalizado para un servidor específico en Discord. En 2024, el proyecto se reanuda con la intención de servir como un ejemplo educativo y un recurso de código de ejemplo actualizado a las mejores prácticas actuales.",
-  "main": "index.js",
+  "main": "src/index.js",
   "packageManager": "bun@1.3.13",
   "scripts": {
     "install:database": "bun -e \"const provider = String(process.env.DATABASE_PROVIDER || 'none').trim().toLowerCase(); const drivers = { postgres: 'pg', postgresql: 'pg', mysql: 'mysql2', mariadb: 'mariadb', mongodb: 'mongodb' }; const dependency = drivers[provider]; if (!dependency) { if (provider === 'none' || provider === 'memory' || provider === 'sqlite') { console.log('No external database driver needed for ' + provider + '.'); process.exit(0); } console.error('Unsupported DATABASE_PROVIDER: ' + provider); process.exit(1); } console.log('Installing database driver: ' + dependency); const install = Bun.spawnSync(['bun', 'add', '--no-save', dependency], { stdout: 'inherit', stderr: 'inherit' }); process.exit(install.exitCode || 0);\"",
     "install:dev": "bun install && bun run install:database",
     "install:prod": "bun install --production && bun run install:database",
-    "start": "AINBOT_MODE=production NODE_ENV=production bun index.js",
-    "dev": "AINBOT_MODE=development NODE_ENV=development bun index.js",
-    "start:dev": "AINBOT_MODE=development NODE_ENV=development bun index.js",
-    "start:prod": "AINBOT_MODE=production NODE_ENV=production bun index.js"
+    "start": "AINBOT_MODE=production NODE_ENV=production bun src/index.js",
+    "dev": "AINBOT_MODE=development NODE_ENV=development bun src/index.js",
+    "start:dev": "AINBOT_MODE=development NODE_ENV=development bun src/index.js",
+    "start:prod": "AINBOT_MODE=production NODE_ENV=production bun src/index.js"
   },
   "keywords": [
     "discord",

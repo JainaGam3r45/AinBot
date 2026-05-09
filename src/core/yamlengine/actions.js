@@ -18,7 +18,7 @@ const { buildMessagePayload, validateMessageConfig } = require("./messages");
 const { validateConditions } = require("./conditions");
 const { addMetaValue, deleteMetaValue, getMetaValue, setMetaValue } = require("./meta");
 const { resolveString, resolveValue } = require("./placeholders");
-const { safeDeferReply, safeEditReply, safeReply } = require("../safereply");
+const { safeDeferReply, safeEditReply, safeReply } = require("../runtime/safereply");
 
 const actionIds = new Set([
     "addCoins",

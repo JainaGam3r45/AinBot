@@ -10,6 +10,30 @@ const YAML = require("yaml");
 async function loadYamlFiles(dirName, logger) {
     const directory = path.join(process.cwd(), dirName);
     const files = await findYamlFiles(directory);
+
+    return loadYamlDocuments(files, logger);
+}
+
+async function loadModuleYamlFiles(sectionName, logger, legacyDirectories = []) {
+    const configDirectory = path.join(process.cwd(), "configs");
+    const sections = Array.isArray(sectionName) ? sectionName : [sectionName];
+    const modules = await findConfigModules(configDirectory);
+    const files = [];
+
+    for (const moduleName of modules) {
+        for (const section of sections) {
+            files.push(...await findYamlFiles(path.join(configDirectory, moduleName, section)));
+        }
+    }
+
+    for (const directory of legacyDirectories) {
+        files.push(...await findYamlFiles(path.join(process.cwd(), directory)));
+    }
+
+    return loadYamlDocuments(files, logger);
+}
+
+async function loadYamlDocuments(files, logger) {
     const documents = [];
 
     for (const file of files) {
@@ -33,6 +57,24 @@ async function loadYamlFiles(dirName, logger) {
     }
 
     return documents;
+}
+
+async function findConfigModules(directory) {
+    let entries;
+
+    try {
+        entries = await readdir(directory, {
+            withFileTypes: true,
+        });
+    } catch (error) {
+        if (error.code === "ENOENT") return [];
+        throw error;
+    }
+
+    return entries
+        .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
+        .map((entry) => entry.name)
+        .sort((left, right) => left.localeCompare(right));
 }
 
 /**
@@ -74,4 +116,5 @@ function isPlainObject(value) {
 
 module.exports = {
     loadYamlFiles,
+    loadModuleYamlFiles,
 };

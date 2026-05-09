@@ -16,7 +16,9 @@ pids
 *.seed
 *.pid.lock
 configs/addons.json
+configs/modules.json
 configs/addons/
+configs/Music/
 
 # Coverage directory used by tools like istanbul
 coverage/

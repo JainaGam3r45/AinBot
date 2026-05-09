@@ -1,12 +1,13 @@
-const { mkdir, readdir, readFile, writeFile } = require("fs/promises");
+const { access, mkdir, readdir, readFile, writeFile } = require("fs/promises");
 const path = require("path");
 const YAML = require("yaml");
 
-const addonsDirectory = path.join(process.cwd(), "configs", "addons");
-const settingsFile = path.join(process.cwd(), "configs", "addons.json");
+const modulesDirectory = path.join(process.cwd(), "configs");
+const settingsFile = path.join(modulesDirectory, "modules.json");
+const legacySettingsFile = path.join(modulesDirectory, "addons.json");
 
 /**
- * Loads installed addons from configs/addons.
+ * Loads installed JavaScript modules from configs.
  * @param {object} client Discord client.
  * @param {object} logger Central logger.
  */
@@ -16,14 +17,14 @@ async function loadAddons(client, logger) {
     const addons = new Map();
 
     for (const entry of entries) {
-        const folder = path.join(addonsDirectory, entry.name);
+        const folder = path.join(modulesDirectory, entry.name);
         const addon = await loadAddon(folder, entry.name, client, logger, settings);
 
         if (addon) addons.set(addon.name, addon);
     }
 
     client.addons = {
-        directory: addonsDirectory,
+        directory: modulesDirectory,
         settings,
         loaded: addons,
     };
@@ -35,17 +36,30 @@ async function loadAddons(client, logger) {
 
 async function readAddonFolders(logger) {
     try {
-        const entries = await readdir(addonsDirectory, {
+        const entries = await readdir(modulesDirectory, {
             withFileTypes: true,
         });
 
-        return entries
+        const folders = entries
             .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
             .sort((left, right) => left.name.localeCompare(right.name));
+
+        const loadable = await Promise.all(folders.map(async (entry) => {
+            const entryFile = path.join(modulesDirectory, entry.name, "index.js");
+
+            try {
+                await access(entryFile);
+                return entry;
+            } catch {
+                return null;
+            }
+        }));
+
+        return loadable.filter(Boolean);
     } catch (error) {
         if (error.code === "ENOENT") return [];
 
-        logger.issue("Failed to read addons directory", error);
+        logger.issue("Failed to read configs modules directory", error);
         return [];
     }
 }
@@ -57,7 +71,7 @@ async function loadAddon(folder, folderName, client, logger, settings) {
         const config = await loadAddonConfig(folder, logger);
         delete require.cache[require.resolve(entryFile)];
         const exported = require(entryFile);
-        const definition = typeof exported === "function" ? await exported(createAddonContext(client, logger, folderName, config)) : exported;
+        const definition = typeof exported === "function" ? await exported(createAddonContext(client, logger, folderName, config, folder)) : exported;
         const addon = normalizeAddon(definition, folderName);
         const disabled = settings.disabled.includes(addon.name);
 
@@ -68,7 +82,7 @@ async function loadAddon(folder, folderName, client, logger, settings) {
         addon.events = disabled ? [] : normalizeList(addon.events);
 
         if (!disabled && typeof addon.load === "function") {
-            const loaded = await addon.load(createAddonContext(client, logger, addon.name, config));
+            const loaded = await addon.load(createAddonContext(client, logger, addon.name, config, folder));
 
             addon.commands.push(...normalizeList(loaded?.commands));
             addon.events.push(...normalizeList(loaded?.events));
@@ -84,7 +98,12 @@ async function loadAddon(folder, folderName, client, logger, settings) {
 }
 
 async function loadAddonConfig(folder, logger) {
-    for (const name of ["config.yml", "config.yaml"]) {
+    for (const name of [
+        path.join("resources", "config.yml"),
+        path.join("resources", "config.yaml"),
+        "config.yml",
+        "config.yaml",
+    ]) {
         try {
             const source = await readFile(path.join(folder, name), "utf8");
             const config = YAML.parse(source) || {};
@@ -105,14 +124,14 @@ async function loadAddonConfig(folder, logger) {
     return {};
 }
 
-function createAddonContext(client, logger, addonName, config) {
+function createAddonContext(client, logger, addonName, config, directory) {
     return {
         client,
         config,
         logger,
         addonName,
         root: process.cwd(),
-        directory: path.join(addonsDirectory, addonName),
+        directory,
         database: client.database?.namespace(`addons.${addonName}`),
     };
 }
@@ -155,22 +174,25 @@ function isPlainObject(value) {
 }
 
 async function loadAddonSettings(logger) {
-    try {
-        const source = await readFile(settingsFile, "utf8");
-        const settings = JSON.parse(source);
+    for (const file of [settingsFile, legacySettingsFile]) {
+        try {
+            const source = await readFile(file, "utf8");
+            const settings = JSON.parse(source);
 
-        return {
-            disabled: normalizeList(settings.disabled).map(normalizeAddonName),
-        };
-    } catch (error) {
-        if (error.code !== "ENOENT") {
-            logger.issue("Failed to read addon settings, using defaults", error);
+            return {
+                disabled: normalizeList(settings.disabled).map(normalizeAddonName),
+            };
+        } catch (error) {
+            if (error.code !== "ENOENT") {
+                logger.issue("Failed to read addon settings, using defaults", error);
+                break;
+            }
         }
-
-        return {
-            disabled: [],
-        };
     }
+
+    return {
+        disabled: [],
+    };
 }
 
 async function saveAddonSettings(settings) {

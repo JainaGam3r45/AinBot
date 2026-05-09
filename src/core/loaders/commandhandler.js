@@ -1,17 +1,17 @@
 const { Client } = require("discord.js");
-const addonCommand = require("./addons/command");
-const reloadCommand = require("./reloadcommand");
-const { getEnabledAddonCommands } = require("./addons/manager");
-const { loadYamlCommands } = require("./yamlengine/commands");
-const { loadMessageTemplates } = require("./yamlengine/messages");
-const { loadMetaDefinitions } = require("./yamlengine/meta");
+const addonCommand = require("../addons/command");
+const reloadCommand = require("../runtime/reloadcommand");
+const { getEnabledAddonCommands } = require("../addons/manager");
+const { loadYamlCommands } = require("../yamlengine/commands");
+const { loadMessageTemplates } = require("../yamlengine/messages");
+const { loadMetaDefinitions } = require("../yamlengine/meta");
 
 /**
  * Loads slash command files and publishes them to Discord.
  * @param {Client} client Discord client with a commands collection.
  */
 async function loadCommands(client) {
-    const logger = require("./logger");
+    const logger = require("../runtime/logger");
 
     await client.application.commands.cache.clear();
     await client.commands.clear();

@@ -7,7 +7,7 @@ components:
       - type: text-display
         content: "# Hello, %user_display_name%"
       - type: text-display
-        content: "This message was built from `configs/messages/default-welcome.yml` using Display Components."
+        content: "This message was built from `configs/_Example/resources/messages/default-welcome.yml` using Display Components."
       - type: separator
         spacing: 1
       - type: section

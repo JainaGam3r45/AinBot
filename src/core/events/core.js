@@ -1,7 +1,7 @@
 const { ActivityType, ChatInputCommandInteraction, Client, Events, MessageFlags, PresenceUpdateStatus } = require("discord.js");
-const { loadCommands } = require("../Utils/commandHandler");
-const logger = require("../Utils/logger");
-const { isHandledInteractionResponseError, safeReply } = require("../Utils/safereply");
+const { loadCommands } = require("../loaders/commandhandler");
+const logger = require("../runtime/logger");
+const { isHandledInteractionResponseError, safeReply } = require("../runtime/safereply");
 
 module.exports = [
     {

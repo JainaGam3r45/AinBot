@@ -6,7 +6,7 @@ const {
     PermissionFlagsBits,
     SlashCommandBuilder,
 } = require("discord.js");
-const { loadYamlFiles } = require("./files");
+const { loadModuleYamlFiles } = require("./files");
 const { createRuntimeContext } = require("./context");
 const { runActions, validateActions } = require("./actions");
 const { evaluateConditions, validateConditions } = require("./conditions");
@@ -35,7 +35,7 @@ const contextTypes = {
  * @param {object} logger Logger used for invalid configs.
  */
 async function loadYamlCommands(client, messages, logger) {
-    const files = await loadYamlFiles("configs/commands", logger);
+    const files = await loadModuleYamlFiles("interactions", logger, ["configs/commands"]);
     const commands = [];
 
     for (const file of files) {

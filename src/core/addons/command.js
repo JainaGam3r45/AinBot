@@ -1,8 +1,8 @@
 const { MessageFlags, SlashCommandBuilder } = require("discord.js");
-const logger = require("../logger");
-const { safeReply } = require("../safereply");
+const logger = require("../runtime/logger");
+const { safeReply } = require("../runtime/safereply");
 const { setAddonEnabled } = require("./manager");
-const { reloadBot } = require("../reloader");
+const { reloadBot } = require("../runtime/reloader");
 
 const data = new SlashCommandBuilder()
     .setName("addons")
@@ -63,7 +63,7 @@ function formatAddonList(client) {
     const addons = [...(client.addons?.loaded?.values() || [])];
 
     if (!addons.length) {
-        return `No addons installed. Put addon folders in \`${client.addons?.directory || "configs/addons"}\`.`;
+        return `No addons installed. Put addon folders in \`${client.addons?.directory || "configs"}\`.`;
     }
 
     return addons

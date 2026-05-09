@@ -1,9 +1,9 @@
-const logger = require('./Utils/logger');
-const { loadAddons } = require("./Utils/addons/manager");
-const { installCrashGuard, shutdown } = require("./Utils/crashguard");
+const logger = require("./core/runtime/logger");
+const { loadAddons } = require("./core/addons/manager");
+const { installCrashGuard, shutdown } = require("./core/runtime/crashguard");
 const { createDatabase } = require("./database");
 
-const { Client, GatewayIntentBits, Partials, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, Collection } = require("discord.js");
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -41,11 +41,11 @@ const client = new Client({
         Partials.PollAnswer,
     ],
     allowedMentions: {
-        parse: [ 'everyone' ]
+        parse: ["everyone"]
     }
 });
 
-const { loadEvents } = require('./Utils/eventHandler');
+const { loadEvents } = require("./core/loaders/eventhandler");
 
 client.events = new Collection();
 client.commands = new Collection();

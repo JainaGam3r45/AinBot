@@ -14,7 +14,8 @@ const {
     TextDisplayBuilder,
     ThumbnailBuilder,
 } = require("discord.js");
-const { loadYamlFiles } = require("./files");
+const path = require("path");
+const { loadModuleYamlFiles } = require("./files");
 const { resolveValue } = require("./placeholders");
 
 const buttonStyles = {
@@ -32,7 +33,7 @@ const buttonStyles = {
  */
 async function loadMessageTemplates(logger) {
     const templates = new Map();
-    const files = await loadYamlFiles("configs/messages", logger);
+    const files = await loadModuleYamlFiles(path.join("resources", "messages"), logger, ["configs/messages"]);
 
     for (const file of files) {
         const id = String(file.value.id || file.id).trim();
