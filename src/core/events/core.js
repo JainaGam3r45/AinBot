@@ -25,8 +25,7 @@ module.exports = [
                 status: PresenceUpdateStatus.Idle,
             });
 
-            logger.info(`${client.user.tag} (${client.user.id}) is online and ready to serve you.`);
-            logger.onlineBanner(project.name, project.version);
+            logger.onlineBanner(project.name, project.version, client.user);
         },
     },
     {

@@ -118,15 +118,18 @@ class Logger {
      * Writes the online startup banner.
      * @param {string} name Project name.
      * @param {string} version Project version.
+     * @param {object} bot Bot user that is currently running.
      */
-    onlineBanner(name, version) {
+    onlineBanner(name, version, bot) {
         const border = "#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#";
         const message = centerText(`• ${name} v${version} is now Online! •`, border.length);
+        const description = centerText(`Running as ${bot.tag} (${bot.id})`, border.length);
 
         process.stdout.write([
             border,
             "",
             message,
+            description,
             "",
             border,
         ].join("\n") + "\n");
