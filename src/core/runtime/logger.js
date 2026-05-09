@@ -6,6 +6,8 @@ const reset = "\x1b[0m";
 const dim = "\x1b[2m";
 const cyan = "\x1b[36m";
 const green = "\x1b[32m";
+const magenta = "\x1b[35m";
+const yellow = "\x1b[33m";
 const white = "\x1b[37m";
 const bold = "\x1b[1m";
 const logsDirectory = path.join(process.cwd(), "logs");
@@ -126,14 +128,29 @@ class Logger {
      */
     onlineBanner(name, version, bot) {
         const border = "#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#";
-        const message = centerText(`• ${name} v${version} is now Online! •`, border.length);
-        const description = centerText(`Running as ${bot.tag} (${bot.id})`, border.length);
+        const projectName = String(name).toUpperCase();
+        const message = centerSegments([
+            colorize("• ", green),
+            colorize(projectName, `${bold}${magenta}`),
+            colorize(" v", white),
+            colorize(version, `${bold}${yellow}`),
+            colorize(" is now ", white),
+            colorize("Online", `${bold}${green}`),
+            colorize("! •", green),
+        ], border.length);
+        const description = centerSegments([
+            colorize("Running as ", white),
+            colorize(bot.tag, `${bold}${cyan}`),
+            colorize(" (", white),
+            colorize(bot.id, yellow),
+            colorize(")", white),
+        ], border.length);
 
         process.stdout.write([
             colorize(border, cyan),
             "",
-            colorize(message, `${bold}${green}`),
-            colorize(description, white),
+            message,
+            description,
             "",
             colorize(border, cyan),
         ].join("\n") + "\n");
@@ -207,6 +224,20 @@ function centerText(value, width) {
     const right = padding - left;
 
     return `${" ".repeat(left)}${text}${" ".repeat(right)}`;
+}
+
+function centerSegments(segments, width) {
+    const text = segments.join("");
+    const visibleLength = stripAnsi(text).length;
+    const padding = Math.max(width - visibleLength, 0);
+    const left = Math.floor(padding / 2);
+    const right = padding - left;
+
+    return `${" ".repeat(left)}${text}${" ".repeat(right)}`;
+}
+
+function stripAnsi(value) {
+    return String(value).replace(/\x1b\[[0-9;]*m/g, "");
 }
 
 function colorize(value, color) {
