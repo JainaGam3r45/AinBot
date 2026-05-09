@@ -4,8 +4,8 @@ Este bot carga comandos, eventos y mensajes reutilizables con Display Components
 
 ## Carpetas
 
-- `configs/<Modulo>/interactions`: comandos slash.
-- `configs/<Modulo>/events`: scripts de eventos.
+- `configs/<Modulo>/resources/interactions`: comandos slash definidos en YAML.
+- `configs/<Modulo>/resources/events`: scripts de eventos definidos en YAML.
 - `configs/<Modulo>/resources/messages`: plantillas reutilizables de mensajes con Display Components.
 - `configs/<Modulo>/resources/metas`: definiciones de metadatos.
 - `src/core/yamlengine`: runtime que interpreta YAML, renderiza Display Components, evalúa condiciones y ejecuta acciones.
@@ -15,7 +15,7 @@ Los archivos terminados en `.yml` o `.yaml` se cargan de forma recursiva. Para d
 
 ## Comandos
 
-Crea un archivo dentro de `configs/<Modulo>/interactions`.
+Crea un archivo dentro de `configs/<Modulo>/resources/interactions`.
 
 ```yml
 name: hello
@@ -45,7 +45,7 @@ Los placeholders de opciones incluyen `%option_name%`, `%option_name_id%`, `%opt
 
 ## Eventos
 
-Crea un archivo dentro de `configs/<Modulo>/events`.
+Crea un archivo dentro de `configs/<Modulo>/resources/events`.
 
 ```yml
 name: welcome-message
@@ -165,7 +165,7 @@ Si una meta no está declarada, el motor conserva el comportamiento antiguo: alc
 
 ## Ejemplo de logs de eventos
 
-El proyecto incluye un sistema activo de logs de eventos en `configs/EventLogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/EventLogs/resources/metas/eventlogs.yml`.
+El proyecto incluye un sistema activo de logs de eventos en `configs/EventLogs`. No usa variables de entorno: el canal de logs se guarda en la meta de servidor `event_log_channel`, declarada en `configs/EventLogs/resources/metas/eventlogs.yml`, y los YAML del sistema viven en `configs/EventLogs/resources`.
 
 Para activar los logs en un servidor, usa el comando de desarrollador:
 

@@ -39,7 +39,7 @@ const timerDurations = {
  * @param {object} logger Logger used for invalid configs.
  */
 async function loadYamlEvents(client, messages, logger) {
-    const files = await loadModuleYamlFiles("events", logger, ["configs/events"]);
+    const files = await loadModuleYamlFiles("resources/events", logger, ["configs/events"]);
     const events = [];
 
     for (const file of files) {

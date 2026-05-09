@@ -16,13 +16,13 @@ async function loadYamlFiles(dirName, logger) {
 
 async function loadModuleYamlFiles(sectionName, logger, legacyDirectories = []) {
     const configDirectory = path.join(process.cwd(), "configs");
-    const sections = Array.isArray(sectionName) ? sectionName : [sectionName];
+    const sections = normalizeSections(sectionName);
     const modules = await findConfigModules(configDirectory);
     const files = [];
 
     for (const moduleName of modules) {
         for (const section of sections) {
-            files.push(...await findYamlFiles(path.join(configDirectory, moduleName, section)));
+            files.push(...await findYamlFiles(path.join(configDirectory, moduleName, ...section)));
         }
     }
 
@@ -31,6 +31,12 @@ async function loadModuleYamlFiles(sectionName, logger, legacyDirectories = []) 
     }
 
     return loadYamlDocuments(files, logger);
+}
+
+function normalizeSections(sectionName) {
+    const sections = Array.isArray(sectionName) ? sectionName : [sectionName];
+
+    return sections.map((section) => String(section).split(/[\\/]+/).filter(Boolean));
 }
 
 async function loadYamlDocuments(files, logger) {
