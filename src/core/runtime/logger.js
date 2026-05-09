@@ -4,6 +4,10 @@ const { inspect } = require("util");
 
 const reset = "\x1b[0m";
 const dim = "\x1b[2m";
+const cyan = "\x1b[36m";
+const green = "\x1b[32m";
+const white = "\x1b[37m";
+const bold = "\x1b[1m";
 const logsDirectory = path.join(process.cwd(), "logs");
 const activeMode = normalizeMode(process.env.AINBOT_MODE || process.env.NODE_ENV);
 
@@ -126,12 +130,12 @@ class Logger {
         const description = centerText(`Running as ${bot.tag} (${bot.id})`, border.length);
 
         process.stdout.write([
-            border,
+            colorize(border, cyan),
             "",
-            message,
-            description,
+            colorize(message, `${bold}${green}`),
+            colorize(description, white),
             "",
-            border,
+            colorize(border, cyan),
         ].join("\n") + "\n");
     }
 
@@ -203,6 +207,10 @@ function centerText(value, width) {
     const right = padding - left;
 
     return `${" ".repeat(left)}${text}${" ".repeat(right)}`;
+}
+
+function colorize(value, color) {
+    return `${color}${value}${reset}`;
 }
 
 /**
