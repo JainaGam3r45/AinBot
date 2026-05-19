@@ -116,6 +116,69 @@ DATABASE_URL="postgres://user:password@localhost:5432/ainbot"
 DATABASE_SSL="false"
 ```
 
+### Migración de base de datos
+
+Puedes migrar datos entre proveedores persistentes con una herramienta offline. Es útil si empiezas con SQLite y más adelante quieres pasar a MySQL, MariaDB, PostgreSQL o MongoDB.
+
+La migración lee datos desde `DATABASE_SOURCE_*` y los escribe en `DATABASE_TARGET_*`, así no se mezcla con la configuración normal del bot. El origen nunca se modifica.
+
+Antes de migrar hacia un proveedor externo, instala su driver:
+
+```bash
+DATABASE_PROVIDER="mysql" bun run install:database
+```
+
+Para validar una migración sin escribir datos:
+
+```bash
+bun run database:migrate --dry-run
+```
+
+Por defecto, la migración aborta si el destino ya tiene un registro con la misma combinación de `namespace` y `key`:
+
+```bash
+bun run database:migrate --on-conflict abort
+```
+
+Si quieres reemplazar registros existentes en el destino, usa `overwrite`. Haz un backup antes de usar esta opción:
+
+```bash
+bun run database:migrate --on-conflict overwrite
+```
+
+Ejemplo de SQLite a MySQL:
+
+```makefile
+DATABASE_SOURCE_PROVIDER="sqlite"
+DATABASE_SOURCE_PATH="data/ainbot.sqlite"
+
+DATABASE_TARGET_PROVIDER="mysql"
+DATABASE_TARGET_URL="mysql://user:password@localhost:3306/ainbot"
+DATABASE_TARGET_TABLE="ainbot_records"
+```
+
+```bash
+bun run database:migrate --dry-run
+bun run database:migrate --on-conflict abort
+```
+
+Ejemplo de SQLite a PostgreSQL:
+
+```makefile
+DATABASE_SOURCE_PROVIDER="sqlite"
+DATABASE_SOURCE_PATH="data/ainbot.sqlite"
+
+DATABASE_TARGET_PROVIDER="postgresql"
+DATABASE_TARGET_URL="postgres://user:password@localhost:5432/ainbot"
+DATABASE_TARGET_SSL="false"
+DATABASE_TARGET_TABLE="ainbot_records"
+```
+
+```bash
+bun run database:migrate --dry-run
+bun run database:migrate --on-conflict abort
+```
+
 ## Contribución
 
 Este proyecto está abierto a contribuciones y sugerencias. Si deseas contribuir, por favor sigue estos pasos:
