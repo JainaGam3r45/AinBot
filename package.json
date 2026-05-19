@@ -11,6 +11,7 @@
     "install:prod": "bun install --production && bun run install:database",
     "database:migrate": "bun src/database/migrate.js",
     "start": "AINBOT_MODE=production NODE_ENV=production bun src/index.js",
+    "test": "bun test",
     "dev": "AINBOT_MODE=development NODE_ENV=development bun src/index.js",
     "start:dev": "AINBOT_MODE=development NODE_ENV=development bun src/index.js",
     "start:prod": "AINBOT_MODE=production NODE_ENV=production bun src/index.js"
