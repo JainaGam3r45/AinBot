@@ -32,6 +32,18 @@ class BaseDatabaseAdapter {
         throw new Error(`${this.constructor.name} does not implement list().`);
     }
 
+    async has() {
+        throw new Error(`${this.constructor.name} does not implement has().`);
+    }
+
+    async scanRecords() {
+        throw new Error(`${this.constructor.name} does not implement scanRecords().`);
+    }
+
+    async writeRecord() {
+        throw new Error(`${this.constructor.name} does not implement writeRecord().`);
+    }
+
     namespace(name) {
         return new DatabaseNamespace(this, name);
     }

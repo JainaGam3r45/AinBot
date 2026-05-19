@@ -84,6 +84,44 @@ class MysqlDatabaseAdapter extends SqlRecordAdapter {
             updatedAt: new Date(record.updatedAt),
         }));
     }
+
+    async has(namespace, key) {
+        const [rows] = await this.pool.execute(`
+            SELECT 1 AS found
+            FROM ${this.table()}
+            WHERE namespace = ? AND record_key = ?
+            LIMIT 1
+        `, [namespace, key]);
+
+        return rows.length > 0;
+    }
+
+    async *scanRecords() {
+        const [rows] = await this.pool.execute(`
+            SELECT namespace, record_key AS \`key\`, value, updated_at AS updatedAt
+            FROM ${this.table()}
+            ORDER BY namespace ASC, record_key ASC
+        `);
+
+        for (const record of rows) {
+            yield this.normalizeRecord(record);
+        }
+    }
+
+    async writeRecord(record) {
+        await this.pool.execute(`
+            INSERT INTO ${this.table()} (namespace, record_key, value, updated_at)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = VALUES(updated_at)
+        `, [
+            record.namespace,
+            record.key,
+            this.serialize(record.value),
+            this.normalizeRecordDate(record.updatedAt),
+        ]);
+
+        return record;
+    }
 }
 
 function getConnectionOptions(config) {

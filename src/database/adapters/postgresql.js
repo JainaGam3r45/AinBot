@@ -81,6 +81,50 @@ class PostgresqlDatabaseAdapter extends SqlRecordAdapter {
 
         return records.rows;
     }
+
+    async has(namespace, key) {
+        const records = await this.pool.query(`
+            SELECT 1 AS found
+            FROM ${this.table()}
+            WHERE namespace = $1 AND record_key = $2
+            LIMIT 1
+        `, [namespace, key]);
+
+        return records.rowCount > 0;
+    }
+
+    async *scanRecords() {
+        const records = await this.pool.query(`
+            SELECT namespace, record_key AS key, value, updated_at AS "updatedAt"
+            FROM ${this.table()}
+            ORDER BY namespace ASC, record_key ASC
+        `);
+
+        for (const record of records.rows) {
+            yield {
+                namespace: record.namespace,
+                key: record.key,
+                value: record.value,
+                updatedAt: this.normalizeRecordDate(record.updatedAt),
+            };
+        }
+    }
+
+    async writeRecord(record) {
+        await this.pool.query(`
+            INSERT INTO ${this.table()} (namespace, record_key, value, updated_at)
+            VALUES ($1, $2, $3::jsonb, $4)
+            ON CONFLICT (namespace, record_key)
+            DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+        `, [
+            record.namespace,
+            record.key,
+            this.serialize(record.value),
+            this.normalizeRecordDate(record.updatedAt),
+        ]);
+
+        return record;
+    }
 }
 
 function getConnectionOptions(config) {

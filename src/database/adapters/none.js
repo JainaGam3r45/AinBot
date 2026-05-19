@@ -16,6 +16,16 @@ class NoneDatabaseAdapter extends BaseDatabaseAdapter {
     async list() {
         return [];
     }
+
+    async has() {
+        return false;
+    }
+
+    async *scanRecords() {}
+
+    async writeRecord(record) {
+        return record;
+    }
 }
 
 module.exports = {

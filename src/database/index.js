@@ -17,8 +17,13 @@ const adapters = {
     sqlite: SqliteDatabaseAdapter,
 };
 
-async function createDatabase(env = process.env) {
-    const config = loadDatabaseConfig(env);
+async function createDatabase(env = process.env, prefix = "DATABASE") {
+    const config = loadDatabaseConfig(env, prefix);
+
+    return createDatabaseFromConfig(config);
+}
+
+async function createDatabaseFromConfig(config) {
     const Adapter = adapters[config.provider];
     const database = new Adapter(config);
 
@@ -29,4 +34,5 @@ async function createDatabase(env = process.env) {
 
 module.exports = {
     createDatabase,
+    createDatabaseFromConfig,
 };

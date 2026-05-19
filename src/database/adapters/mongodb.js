@@ -106,6 +106,63 @@ class MongodbDatabaseAdapter extends BaseDatabaseAdapter {
 
         return records;
     }
+
+    async has(namespace, key) {
+        const record = await this.collection.findOne({
+            namespace,
+            key,
+        }, {
+            projection: {
+                _id: 1,
+            },
+        });
+
+        return Boolean(record);
+    }
+
+    async *scanRecords() {
+        const records = this.collection
+            .find({}, {
+                projection: {
+                    _id: 0,
+                    namespace: 1,
+                    key: 1,
+                    value: 1,
+                    updatedAt: 1,
+                },
+            })
+            .sort({
+                namespace: 1,
+                key: 1,
+            });
+
+        for await (const record of records) {
+            yield {
+                namespace: record.namespace,
+                key: record.key,
+                value: record.value,
+                updatedAt: normalizeDate(record.updatedAt),
+            };
+        }
+    }
+
+    async writeRecord(record) {
+        await this.collection.updateOne({
+            namespace: record.namespace,
+            key: record.key,
+        }, {
+            $set: {
+                namespace: record.namespace,
+                key: record.key,
+                value: record.value,
+                updatedAt: normalizeDate(record.updatedAt),
+            },
+        }, {
+            upsert: true,
+        });
+
+        return record;
+    }
 }
 
 function getMongoUrl(config) {
@@ -117,6 +174,13 @@ function getMongoUrl(config) {
     const port = config.port ? `:${config.port}` : "";
 
     return `mongodb://${auth}${config.host}${port}`;
+}
+
+function normalizeDate(value) {
+    if (!value) return new Date();
+    if (value instanceof Date) return value;
+
+    return new Date(value);
 }
 
 module.exports = {

@@ -37,10 +37,50 @@ class MemoryDatabaseAdapter extends BaseDatabaseAdapter {
                 updatedAt: record.updatedAt,
             }));
     }
+
+    async has(namespace, key) {
+        return this.records.has(getRecordId(namespace, key));
+    }
+
+    async *scanRecords() {
+        const records = Array.from(this.records.values())
+            .sort((left, right) => {
+                const namespaceOrder = left.namespace.localeCompare(right.namespace);
+
+                return namespaceOrder || left.key.localeCompare(right.key);
+            });
+
+        for (const record of records) {
+            yield {
+                namespace: record.namespace,
+                key: record.key,
+                value: structuredClone(record.value),
+                updatedAt: record.updatedAt,
+            };
+        }
+    }
+
+    async writeRecord(record) {
+        this.records.set(getRecordId(record.namespace, record.key), {
+            namespace: record.namespace,
+            key: record.key,
+            value: structuredClone(record.value),
+            updatedAt: normalizeDate(record.updatedAt),
+        });
+
+        return structuredClone(record);
+    }
 }
 
 function getRecordId(namespace, key) {
     return `${namespace}:${key}`;
+}
+
+function normalizeDate(value) {
+    if (!value) return new Date();
+    if (value instanceof Date) return value;
+
+    return new Date(value);
 }
 
 module.exports = {

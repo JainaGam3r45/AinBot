@@ -36,6 +36,7 @@ class SqliteDatabaseAdapter extends SqlRecordAdapter {
 
     async close() {
         if (this.db) {
+            this.db.exec("PRAGMA wal_checkpoint(TRUNCATE);");
             this.db.close();
             this.db = null;
         }
@@ -92,6 +93,44 @@ class SqliteDatabaseAdapter extends SqlRecordAdapter {
             value: this.deserialize(record.value),
             updatedAt: new Date(record.updatedAt),
         }));
+    }
+
+    async has(namespace, key) {
+        const record = this.db.prepare(`
+            SELECT 1 AS found
+            FROM ${this.table()}
+            WHERE namespace = ? AND record_key = ?
+        `).get(namespace, key);
+
+        return Boolean(record);
+    }
+
+    async *scanRecords() {
+        const records = this.db.prepare(`
+            SELECT namespace, record_key AS key, value, updated_at AS updatedAt
+            FROM ${this.table()}
+            ORDER BY namespace ASC, record_key ASC
+        `).all();
+
+        for (const record of records) {
+            yield this.normalizeRecord(record);
+        }
+    }
+
+    async writeRecord(record) {
+        this.db.prepare(`
+            INSERT INTO ${this.table()} (namespace, record_key, value, updated_at)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(namespace, record_key)
+            DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+        `).run(
+            record.namespace,
+            record.key,
+            this.serialize(record.value),
+            this.normalizeRecordDate(record.updatedAt).toISOString(),
+        );
+
+        return record;
     }
 }
 

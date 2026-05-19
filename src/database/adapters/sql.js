@@ -17,10 +17,30 @@ class SqlRecordAdapter extends BaseDatabaseAdapter {
 
         return value;
     }
+
+    normalizeRecord(record) {
+        return {
+            namespace: record.namespace,
+            key: record.key,
+            value: this.deserialize(record.value),
+            updatedAt: normalizeDate(record.updatedAt),
+        };
+    }
+
+    normalizeRecordDate(value) {
+        return normalizeDate(value);
+    }
 }
 
 function quoteIdentifier(identifier, quote) {
     return `${quote}${identifier.replaceAll(quote, `${quote}${quote}`)}${quote}`;
+}
+
+function normalizeDate(value) {
+    if (!value) return new Date();
+    if (value instanceof Date) return value;
+
+    return new Date(value);
 }
 
 module.exports = {

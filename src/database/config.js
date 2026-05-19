@@ -12,23 +12,30 @@ const providers = new Set([
     "postgres",
 ]);
 
-function loadDatabaseConfig(env = process.env) {
-    const provider = normalizeProvider(env.DATABASE_PROVIDER || "none");
-    const url = optional(env.DATABASE_URL);
+function loadDatabaseConfig(env = process.env, prefix = "DATABASE") {
+    const read = createEnvReader(env, prefix);
+    const provider = normalizeProvider(read("PROVIDER") || "none");
+    const url = optional(read("URL"));
 
     return {
         provider,
         url,
-        host: optional(env.DATABASE_HOST) || "localhost",
-        port: parsePort(env.DATABASE_PORT),
-        user: optional(env.DATABASE_USER),
-        password: optional(env.DATABASE_PASSWORD),
-        name: optional(env.DATABASE_NAME) || parseDatabaseName(url) || "ainbot",
-        sqlitePath: resolveSqlitePath(env.DATABASE_PATH),
-        tableName: normalizeIdentifier(env.DATABASE_TABLE || "ainbot_records"),
-        mongoCollection: normalizeMongoName(env.DATABASE_COLLECTION || "ainbot_records"),
-        ssl: parseBoolean(env.DATABASE_SSL),
+        host: optional(read("HOST")) || "localhost",
+        port: parsePort(read("PORT")),
+        user: optional(read("USER")),
+        password: optional(read("PASSWORD")),
+        name: optional(read("NAME")) || parseDatabaseName(url) || "ainbot",
+        sqlitePath: resolveSqlitePath(read("PATH")),
+        tableName: normalizeIdentifier(read("TABLE") || "ainbot_records"),
+        mongoCollection: normalizeMongoName(read("COLLECTION") || "ainbot_records"),
+        ssl: parseBoolean(read("SSL")),
     };
+}
+
+function createEnvReader(env, prefix) {
+    const normalizedPrefix = String(prefix || "DATABASE").trim().toUpperCase();
+
+    return (name) => env[`${normalizedPrefix}_${name}`];
 }
 
 function normalizeProvider(value) {
