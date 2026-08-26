@@ -41,7 +41,7 @@
   "author": "JainaGam3r45",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^14.26.4",
+    "discord.js": "^14.27.0",
     "yaml": "^2.9.0"
   }
 }
