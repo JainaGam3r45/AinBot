@@ -13,6 +13,7 @@ El objetivo principal de revivir este proyecto es proporcionar un recurso educat
 ## Documentación
 
 - [Motor de comandos y eventos YAML](docs/yaml-engine.md)
+- [Intents privilegiados](docs/intents.md)
 - [Sistema de addons privados](docs/addons.md)
 - [Addon de música de pago](docs/music-addon.md)
 
@@ -27,7 +28,7 @@ El objetivo principal de revivir este proyecto es proporcionar un recurso educat
 - `configs/Music/`: ubicación esperada del addon privado de música cuando se instala localmente.
 
 ## Instalación
-Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/)** instalado.
+Para clonar y ejecutar localmente este proyecto, asegúrate de tener **[Bun](https://bun.sh/) 1.4+** instalado.
 
 1. Clona el repositorio:
 ```bash

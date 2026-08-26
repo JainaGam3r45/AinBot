@@ -80,8 +80,10 @@ Triggers soportados:
 - `messageReactionRemove`: cuando se quita una reacción de un mensaje.
 - `messageUpdate`: cuando se edita un mensaje.
 - `modalSubmit`: cuando se envía un modal con custom id iniciado en `script_`.
-- `presenceUpdate`: cuando cambia la presencia de un usuario.
+- `presenceUpdate`: cuando cambia la presencia de un usuario. Requiere el intent privilegiado `GuildPresences`.
 - `selectMenuSubmit`: cuando se envía un select menu con custom id iniciado en `script_`.
+
+Triggers de miembros (`guildMemberAdd`, `guildMemberRemove`, `displayNameUpdate`, `guildBoostAdd`, `guildBoostRemove`) requieren `GuildMembers`. Triggers de mensaje que lean texto (`messageCreate`, `messageDelete`, `messageUpdate` con contenido) requieren `MessageContent`. `presenceUpdate` requiere `GuildPresences`. Detalle en [docs/intents.md](intents.md).
 
 `inviteCountUpdate` y los triggers de tickets no están incluidos todavía porque necesitan sistemas propios encima de los eventos base de Discord.
 
