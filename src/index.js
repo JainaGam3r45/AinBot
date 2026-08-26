@@ -1,33 +1,17 @@
 const logger = require("./core/runtime/logger");
 const { loadAddons } = require("./core/addons/manager");
 const { installCrashGuard, shutdown } = require("./core/runtime/crashguard");
+const {
+    buildGatewayIntents,
+    formatDisallowedIntentsHelp,
+    isDisallowedIntentsError,
+    resolvePrivilegedIntents,
+} = require("./core/runtime/intents");
 const { createDatabase } = require("./database");
 
-const { Client, GatewayIntentBits, Partials, Collection } = require("discord.js");
+const { Client, Partials, Collection } = require("discord.js");
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildModeration,
-        GatewayIntentBits.GuildExpressions,
-        GatewayIntentBits.GuildIntegrations,
-        GatewayIntentBits.GuildWebhooks,
-        GatewayIntentBits.GuildInvites,
-        GatewayIntentBits.GuildVoiceStates,
-        GatewayIntentBits.GuildPresences,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.DirectMessageReactions,
-        GatewayIntentBits.DirectMessageTyping,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildScheduledEvents,
-        GatewayIntentBits.AutoModerationConfiguration,
-        GatewayIntentBits.AutoModerationExecution,
-        GatewayIntentBits.GuildMessagePolls,
-        GatewayIntentBits.DirectMessagePolls,
-    ],
+    intents: buildGatewayIntents(),
     partials: [
         Partials.User,
         Partials.Channel,
@@ -41,8 +25,8 @@ const client = new Client({
         Partials.PollAnswer,
     ],
     allowedMentions: {
-        parse: ["everyone"]
-    }
+        parse: ["everyone"],
+    },
 });
 
 const { loadEvents } = require("./core/loaders/eventhandler");
@@ -67,7 +51,13 @@ async function main() {
         await client.login(process.env.BOT_TOKEN);
         logger.info("Discord login request completed.");
     } catch (error) {
-        logger.critical("Failed to start the bot", error);
+        if (isDisallowedIntentsError(error)) {
+            logger.error(formatDisallowedIntentsHelp(error, resolvePrivilegedIntents()));
+            logger.critical("Failed to start the bot due to disallowed privileged intents", error);
+        } else {
+            logger.critical("Failed to start the bot", error);
+        }
+
         await shutdown(client, 1);
     }
 }

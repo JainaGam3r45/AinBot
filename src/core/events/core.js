@@ -1,6 +1,7 @@
 const { ActivityType, ChatInputCommandInteraction, Client, Events, MessageFlags, PresenceUpdateStatus } = require("discord.js");
 const project = require("../../../package.json");
 const { loadCommands } = require("../loaders/commandhandler");
+const { logPrivilegedIntentStatus } = require("../runtime/intents");
 const logger = require("../runtime/logger");
 const { isHandledInteractionResponseError, safeReply } = require("../runtime/safereply");
 
@@ -25,6 +26,7 @@ module.exports = [
                 status: PresenceUpdateStatus.Idle,
             });
 
+            logPrivilegedIntentStatus(logger, client.options.intents);
             logger.onlineBanner(project.name, project.version, client.user);
         },
     },

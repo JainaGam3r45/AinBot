@@ -1,4 +1,5 @@
 const { ComponentType, Events } = require("discord.js");
+const { assertYamlTriggerIntent } = require("../runtime/intents");
 const { loadModuleYamlFiles } = require("./files");
 const { createRuntimeContext } = require("./context");
 const { runActions, validateActions } = require("./actions");
@@ -45,6 +46,13 @@ async function loadYamlEvents(client, messages, logger) {
     for (const file of files) {
         try {
             const event = createYamlEvent(file.value, file.file, messages);
+
+            assertYamlTriggerIntent(
+                file.value.trigger,
+                client.options.intents,
+                logger,
+                file.file,
+            );
 
             events.push(event);
             logger.debug(`Loaded YAML event ${event.yamlName} from ${file.file}`);
